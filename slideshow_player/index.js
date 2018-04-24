@@ -3,9 +3,18 @@ var GlslTransitions = require("glsl-transitions");
 var beautify = require("json-beautify");
 var cvg = require('./cvg.js');
 var dateFormat = require('dateformat');
+var socket = require('socket.io-client')('http://localhost:3172');
+var cheerio = require('cheerio');
+
+// Widgets
+var fetchUrlBtn = document.getElementById("fetchUrlBtn");
+var urlTxt = document.getElementById("urlTxt");
+
+fetchUrlBtn.onclick = function(){
+    socket.emit("url", {url: urlTxt.value});
+}
 
 var slideshows = [];
-
 function addSlideshow(id, json, localize, needGlslTransitions) {
     if (typeof json === "function") {
         slideshows.push({
@@ -25,6 +34,16 @@ function addSlideshow(id, json, localize, needGlslTransitions) {
     }
 }
 addSlideshow("Ex.3", require("./example3/diaporama.json"), "./example3/", true);
+
+// Socket.io command
+socket.on('connect', function(){
+    console.log("Socket.io connected");
+});
+socket.on('article', function(data){
+    
+});
+socket.on('disconnect', function(){});
+
 
 // Create the Diaporama (empty for now)
 var canvas = null;

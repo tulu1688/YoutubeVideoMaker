@@ -1,5 +1,5 @@
 {
-  "name": "canvas-video-generator",
+  "name": "video-generator",
   "version": "1.0.0",
   "description": "Generate smooth videos from browser canvas elements.",
   "main": "index.js",
@@ -16,7 +16,11 @@
     "minimist": "^1.2.0",
     "sprintf": "^0.1.5",
     "tmp": "0.0.28",
-    "socket-io-server": "^1.0.5"
+    "socket.io": "^2.1.0",
+    "cheerio": "^1.0.0-rc.2",
+    "html-to-text": "^4.0.0",
+    "underscore": "^1.9.0",
+    "request": "^2.85.0"
   },
   "devDependencies": {
     "nodemon": "^1.9.1"

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var browserify = require('browserify');
 var bodyParser = require('body-parser');
 var minimist = require('minimist');
@@ -8,7 +6,7 @@ var sprintf = require('sprintf').sprintf;
 var tmp = require('tmp');
 var cp = require('child_process');
 var fs = require('fs');
-var	socket = require('socket-io-server');
+var article_parser = require('./article_parser/parse.js');
 
 var args = minimist(process.argv.slice(2));
 if (args.h || args.help) {
@@ -28,6 +26,7 @@ var NOCLEAN = args.n || args.noclean || false;
 
 
 var app = express();
+var http = require('http').Server(app);
 tempDir = tmp.dirSync({
     unsafeCleanup: true
 });
@@ -89,6 +88,14 @@ app.post('/render', function (req, res) {
 });
 
 
-app.listen(PORT, function () {
+var io = require('socket.io')(http);
+io.set('origins', '*:*');
+http.listen(PORT, function(){
     console.log("Canvas video generator server listening on port " + PORT + ".");
+});
+io.sockets.on('connection', function(client){
+    client.on("url", function(data){
+        console.log(data);
+        article_parser.fetch(data.url);
+    });
 });
