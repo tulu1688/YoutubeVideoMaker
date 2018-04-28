@@ -60,7 +60,7 @@ app.post('/render', function (req, res) {
     var oldTemp = tempDir;
     console.log("Begining rendering of your video. This might take a long time...")
     var ffmpeg = cp.spawn('ffmpeg', [
-    '-framerate', '30',
+    '-framerate', '24',
     '-start_number', '0',
     '-i', 'image-%010d.png',
     '-refs', '5',
