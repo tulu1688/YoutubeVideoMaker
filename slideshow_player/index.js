@@ -29,24 +29,36 @@ socket.on('disconnect', function(){});
 var data = require("./example3/diaporama.json");
 data.transitions = GlslTransitions;
 Diaporama.localize(data, './example3/');
-var diaporama = Diaporama(document.getElementById("diaporama"), null, {
-    autoplay: false,
-    loop: false
-});
-diaporama.width = 1280;
-diaporama.height = 720;
+var diaporama = null;
 
-diaporama.on("error", console.error.bind(console));
-diaporama.on("load", function () {
-    console.log("Slideshow has loaded");
-    if (canvas == null) {
-        canvas = document.getElementById('diaporamaContainer').querySelector('canvas');
-    }
-});
-diaporama.on("ended", function () {
-    console.log("Slideshow is ended");
-    stopAndRenderVideo();
-});
+function setupDiaporama(){
+    var diaporama = Diaporama(document.getElementById("diaporama"), null, {
+        autoplay: false,
+        loop: false
+    });
+    diaporama.width = 1280;
+    diaporama.height = 720;
+
+    diaporama.on("error", console.error.bind(console));
+    diaporama.on("load", function () {
+        console.log("Slideshow has loaded");
+        if (canvas == null) {
+            canvas = document.getElementById('diaporamaContainer').querySelector('canvas');
+        }
+    });
+    diaporama.on("ended", function () {
+        console.log("Slideshow is ended");
+        stopAndRenderVideo();
+    });
+    
+    return diaporama;
+}
+
+function resetDiaporama(){
+    diaporama.destroy();
+    canvas.parentNode.removeChild(canvas);
+    canvas = null;
+}
 
 // Control the diaporama
 var isRecording = false;
@@ -57,6 +69,7 @@ var resetIndex = 24; // 1 sec without subtitle
 var startBtn = document.getElementById("startBtn");
 var stopBtn = document.getElementById("stopBtn");
 startBtn.onclick = function () {
+    diaporama = setupDiaporama();
     diaporama.data = data;
     
     diaporama.play();
@@ -65,7 +78,7 @@ startBtn.onclick = function () {
 };
 stopBtn.onclick = function () {
     stopAndRenderVideo();
-    diaporama.destroy();
+    resetDiaporama();
 };
 
 
