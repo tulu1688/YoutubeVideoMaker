@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tulu Videoshow</title>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
 </head>
 
@@ -47,19 +47,20 @@
 
         <nav id="slideshows">
         </nav>
+        
+        <div>
+            <canvas id="2dCanvas" width="1280" height="720"></canvas>
+        </div>
 
-        <div id="diaporamaContainer">
+        <!-- Old DOM elements. Will refactor and clean them later -->
+        <div id="diaporamaContainer" style="display: none">
             <div id="diaporama"></div>
             <div id="controls"></div>
         </div>
         
         <section>
-            <pre style="height: 400px"><code class="json" id="currentSlide"></code></pre>
+            <pre style="display: none"><code class="json" id="currentSlide"></code></pre>
         </section>
-        
-        <div>
-            <canvas id="2dCanvas" width="1280" height="720"></canvas>
-        </div>
 
         <details style="display: none">
             <pre><code class="json" id="data"></code></pre>

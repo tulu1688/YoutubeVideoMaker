@@ -128,13 +128,12 @@ function renderVideo() {
         }
         
         // Generate text and add here
-        // Todo draw text in center horizontal
         var startY = 500;
         if (subtitle) {
             printInfos = text_utils.getLines(copied_context, subtitle, 1100);
             for (var i=0;i< printInfos.lines.length ;i++) {
                 var line = printInfos.lines[i];
-                copied_context.fillText(line, 70, startY);
+                text_utils.writeLine(copied_context, line, 1200, startY);
                 startY += 50;
             }
         }

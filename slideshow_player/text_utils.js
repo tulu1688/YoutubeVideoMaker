@@ -55,4 +55,11 @@ textUtils.prototype.splitArticleToLines = function(article){
     return lines;
 }
 
+
+textUtils.prototype.writeLine = function(context, line, maxWidth, y){
+    var width = context.measureText(line).width;
+    var x = (maxWidth - width) / 2;
+    context.fillText(line, x, y);
+}
+
 module.exports = new textUtils();
