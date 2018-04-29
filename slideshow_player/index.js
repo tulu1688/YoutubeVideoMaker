@@ -16,11 +16,6 @@ fetchUrlBtn.onclick = function(){
     socket.emit("url", {url: urlTxt.value});
 }
 
-// Test
-var data = require("./example3/diaporama.json");
-data.transitions = GlslTransitions;
-Diaporama.localize(data, './example3/');
-
 // Socket.io command
 socket.on('connect', function(){
     console.log("Socket.io connected");
@@ -31,11 +26,15 @@ socket.on('article', function(data){
 socket.on('disconnect', function(){});
 
 // Create the Diaporama (empty for now)
+var data = require("./example3/diaporama.json");
+data.transitions = GlslTransitions;
+Diaporama.localize(data, './example3/');
 var diaporama = Diaporama(document.getElementById("diaporama"), null, {
     autoplay: false,
     loop: false
 });
-diaporama.data = data;
+diaporama.width = 1280;
+diaporama.height = 720;
 
 diaporama.on("error", console.error.bind(console));
 diaporama.on("load", function () {
@@ -44,7 +43,6 @@ diaporama.on("load", function () {
         canvas = document.getElementById('diaporamaContainer').querySelector('canvas');
     }
 });
-
 diaporama.on("ended", function () {
     console.log("Slideshow is ended");
     stopAndRenderVideo();
@@ -59,12 +57,15 @@ var resetIndex = 24; // 1 sec without subtitle
 var startBtn = document.getElementById("startBtn");
 var stopBtn = document.getElementById("stopBtn");
 startBtn.onclick = function () {
+    diaporama.data = data;
+    
     diaporama.play();
     isRecording = true;
     renderVideo();
 };
 stopBtn.onclick = function () {
     stopAndRenderVideo();
+    diaporama.destroy();
 };
 
 
@@ -107,7 +108,7 @@ function renderVideo() {
 
         requestAnimationFrame(renderVideo);
         
-        if (copied_canvas) {
+        if (copied_canvas && canvas) {
             copied_context.drawImage(canvas, 0, 0);
         }
         
@@ -123,31 +124,3 @@ function renderVideo() {
         }
     }
 }
-
-
-function getLines(ctx, text, maxWidth) {
-    var words = text.split(" ");
-    var lines = [];
-    var currentLine = words[0];
-
-    for (var i = 1; i < words.length; i++) {
-        var word = words[i];
-        var width = ctx.measureText(currentLine + " " + word).width;
-        if (width < maxWidth) {
-            currentLine += " " + word;
-        } else {
-            lines.push(currentLine);
-            currentLine = word;
-        }
-    }
-    lines.push(currentLine);
-    return lines;
-}
-
-function resize() { // Responsive diaporama
-    diaporama.width = 1280;
-    diaporama.height = 720;
-}
-resize();
-
-window.diaporama = diaporama;

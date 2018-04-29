@@ -12,9 +12,7 @@
     "cheerio": "^1.0.0-rc.2",
     "dateformat": "^3.0.3",
     "diaporama": "^2.2.0",
-    "diaporama-player-controls": "^1.1.0",
     "glsl-transitions": "^2015.7.8",
-    "json-beautify": "^1.0.1",
     "marmottajax": "^2.2.0",
     "socket.io-client": "^2.1.0"
   },
