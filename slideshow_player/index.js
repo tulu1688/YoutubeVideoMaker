@@ -7,6 +7,34 @@ var cheerio = require('cheerio');
 
 var cvg = require('./cvg.js');
 var text_utils = require('./text_utils.js');
+var slide_generator = require('./slide_generator.js');
+slide_generator.loadImages([
+    'girls/bn1.jpg',
+    'girls/bn2.jpg',
+    'girls/bn3.jpg',
+    'girls/bn4.jpg',
+    'girls/bn5.jpg',
+    'girls/bn6.jpg',
+    'girls/bn7.jpg',
+    'girls/bn8.jpg',
+    'girls/bn9.jpg',
+    'girls/bn10.jpg',
+    'girls/bn11.jpg',
+    'girls/bn12.jpg',
+    'girls/bn13.jpg',
+    'girls/bn14.jpg',
+    'girls/bn15.jpg',
+    'girls/bn16.jpg',
+    'girls/bn17.jpg',
+    'example3/gladiator.jpg',
+    'example3/leaves.jpg',
+    'example3/paris.jpg',
+    'example3/run.jpg',
+    'example3/train.jpg'
+]);
+slides = slide_generator.generateSlides();
+slides.transitions = GlslTransitions;
+console.log(slides);
 
 // Widgets
 var fetchUrlBtn = document.getElementById("fetchUrlBtn");
@@ -26,9 +54,7 @@ socket.on('article', function(data){
 socket.on('disconnect', function(){});
 
 // Create the Diaporama (empty for now)
-var data = require("./example3/diaporama.json");
-data.transitions = GlslTransitions;
-Diaporama.localize(data, './example3/');
+Diaporama.localize(slides, './');
 var diaporama = null;
 
 function setupDiaporama(){
@@ -70,7 +96,7 @@ var startBtn = document.getElementById("startBtn");
 var stopBtn = document.getElementById("stopBtn");
 startBtn.onclick = function () {
     diaporama = setupDiaporama();
-    diaporama.data = data;
+    diaporama.data = slides;
     
     diaporama.play();
     isRecording = true;
