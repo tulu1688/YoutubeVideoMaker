@@ -28,7 +28,7 @@ module.exports = {
                 ignoreTableTag: 'tplCaption'
             });
         } else {
-            return common_parser.parse($, '#left_calculator', {
+            return common_parser.parse($, '.sidebar_1', {
                 url: url,
                 ignoreTableTag: 'tplCaption'
             });

@@ -2,7 +2,7 @@ var slideDict = require('./slide_dict.js').slideDict;
 var fs = require('fs');
 
 slideGenerator = function () {
-    this.SLIDES = 10; // We try to create ultimate video
+    this.SLIDES = 1000; // We try to create ultimate video
     this.images = [];
 };
 

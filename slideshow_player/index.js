@@ -39,6 +39,7 @@ console.log(slides);
 // Widgets
 var fetchUrlBtn = document.getElementById("fetchUrlBtn");
 var urlTxt = document.getElementById("urlTxt");
+var articleContentEditText = document.getElementById("articleContentEditText");
 
 fetchUrlBtn.onclick = function(){
     socket.emit("url", {url: urlTxt.value});
@@ -49,7 +50,7 @@ socket.on('connect', function(){
     console.log("Socket.io connected");
 });
 socket.on('article', function(data){
-    
+    articleContentEditText.value = data;
 });
 socket.on('disconnect', function(){});
 
@@ -91,12 +92,16 @@ var isRecording = false;
 var subtitle = '';
 var frameIndex = 0;
 var resetIndex = 24; // 1 sec without subtitle
+var paragrahps = [];
 
 var startBtn = document.getElementById("startBtn");
 var stopBtn = document.getElementById("stopBtn");
 startBtn.onclick = function () {
     diaporama = setupDiaporama();
     diaporama.data = slides;
+    
+    if (articleContentEditText.value)
+        paragrahps = text_utils.splitArticleToLines(articleContentEditText.value)
     
     diaporama.play();
     isRecording = true;
@@ -106,10 +111,6 @@ stopBtn.onclick = function () {
     stopAndRenderVideo();
     resetDiaporama();
 };
-
-
-var article = 'look at mozilla.org. If you can see the selected text, and see its wider than your canvas, you can remove words, until the text is short enough. With the removed words, you can start at the second line and do the same.Of course, this will not be very efficient, so you can improve it by not removing one word, but multiple words if you see the text is much wider than the canvas width. I did not research, but maybe their are even javascript libraries that do this for you';
-var paragrahps = text_utils.splitArticleToLines(article);
 
 
 // Prepare canvases

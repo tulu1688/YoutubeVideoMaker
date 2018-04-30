@@ -95,7 +95,8 @@ http.listen(PORT, function(){
 });
 io.sockets.on('connection', function(client){
     client.on("url", function(data){
-        console.log(data);
-        article_parser.fetch(data.url);
+        console.log("Start fetching url: " + data.url);
+        article_parser.fetch(data.url, client);
+        console.log("Finish fetch url: " + data.url);
     });
 });

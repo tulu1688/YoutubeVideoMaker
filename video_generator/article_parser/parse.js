@@ -3,7 +3,7 @@ var request = require('request'),
     _ = require('underscore');
 var vnexpressParser = require('./vnexpress.js');
 
-var parseUrl = function(url) {
+var parseUrl = function(url, client) {
     request(url, {
         timeout: 30000
     }, function(error, response, body) {
@@ -17,8 +17,7 @@ var parseUrl = function(url) {
             
             if (parser) {
                 var content = parser.parse(url, body);
-                console.log(content);
-                // Send to server
+                client.emit('article', content);
             }
         } else {
              console.log('error', url);
