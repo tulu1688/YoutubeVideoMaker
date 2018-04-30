@@ -129,6 +129,8 @@ function stopAndRenderVideo() {
     var fileName = "example_" + dateFormat(now, "yyyymmdd_HHMMss");
     isRecording = false;
     cvg.render(fileName);
+    
+    copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
 }
 
 function renderVideo() {
@@ -143,6 +145,8 @@ function renderVideo() {
                 var printInfos = text_utils.getLines(copied_context, subtitle, 1100);
                 resetIndex = printInfos.no_of_frames;
                 frameIndex = 0;
+            } else {
+                stopAndRenderVideo();
             }
         }
 
@@ -161,6 +165,8 @@ function renderVideo() {
                 text_utils.writeLine(copied_context, line, 1200, startY);
                 startY += 50;
             }
+        } else {
+            resetIndex = 48; // 2 sec to end
         }
     }
 }
