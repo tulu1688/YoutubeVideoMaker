@@ -24,7 +24,7 @@ textUtils.prototype.getLines = function(ctx, text, maxWidth){
     return {
         lines: lines,
         no_of_words: words.length,
-        no_of_frames: words.length * 7 // 24 frame per sec, 3.5 words per sec ==> 6.8 (~7) frame per word
+        no_of_frames: words.length * 6 // 24 frame per sec, 3.5 words per sec ==> 6.8 (~7) frame per word
     }
 }
 
@@ -33,7 +33,7 @@ textUtils.prototype.splitArticleToLines = function(article){
     var lines = [];
     var currentLine = "";
     var minWords = 17;
-    var maxWords = 27;
+    var maxWords = 37;
     var wordNo = 0;
 
     for (var i = 0; i < words.length; i++) {

@@ -7,15 +7,13 @@ module.exports = {
         var $ = cheerio.load(body);
 
         var removeElemt = [
-            '.block_timer_share',
-            '.div-fbook',
-            '.relative_new',
-            '.block_tag',
-            '.box_category',
-            '#box_tinkhac_detail',
-            '.social_share',
-            '#box_tinlienquan',
-            '#box_comment'
+            '.author_mail',
+            '.clearfix',
+            '.related_news',
+            '.wrap_xemthem',
+            '.title_box',
+            '.list_news_quantam',
+            '.Image'
         ];
 
         _.each(removeElemt, function(item) {

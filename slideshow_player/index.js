@@ -8,33 +8,6 @@ var cheerio = require('cheerio');
 var cvg = require('./cvg.js');
 var text_utils = require('./text_utils.js');
 var slide_generator = require('./slide_generator.js');
-slide_generator.loadImages([
-    'girls/bn1.jpg',
-    'girls/bn2.jpg',
-    'girls/bn3.jpg',
-    'girls/bn4.jpg',
-    'girls/bn5.jpg',
-    'girls/bn6.jpg',
-    'girls/bn7.jpg',
-    'girls/bn8.jpg',
-    'girls/bn9.jpg',
-    'girls/bn10.jpg',
-    'girls/bn11.jpg',
-    'girls/bn12.jpg',
-    'girls/bn13.jpg',
-    'girls/bn14.jpg',
-    'girls/bn15.jpg',
-    'girls/bn16.jpg',
-    'girls/bn17.jpg',
-    'example3/gladiator.jpg',
-    'example3/leaves.jpg',
-    'example3/paris.jpg',
-    'example3/run.jpg',
-    'example3/train.jpg'
-]);
-slides = slide_generator.generateSlides();
-slides.transitions = GlslTransitions;
-console.log(slides);
 
 // Widgets
 var fetchUrlBtn = document.getElementById("fetchUrlBtn");
@@ -50,12 +23,15 @@ socket.on('connect', function(){
     console.log("Socket.io connected");
 });
 socket.on('article', function(data){
-    articleContentEditText.value = data;
+    if (data.images.length) {
+        slides = slide_generator.generateSlides(data.images);
+        slides.transitions = GlslTransitions;
+    }
+    articleContentEditText.value = data.content;
 });
 socket.on('disconnect', function(){});
 
 // Create the Diaporama (empty for now)
-Diaporama.localize(slides, './');
 var diaporama = null;
 
 function setupDiaporama(){
