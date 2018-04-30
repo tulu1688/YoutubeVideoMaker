@@ -11,35 +11,26 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "browserify": "^13.0.0",
+    "cheerio": "^1.0.0-rc.2",
     "express": "^4.13.4",
+    "html-to-text": "^4.0.0",
+    "image-downloader": "^3.3.0",
     "marmottajax": "^2.2.0",
     "minimist": "^1.2.0",
+    "npm": "^6.0.0",
+    "request": "^2.85.0",
+    "shelljs": "^0.8.1",
+    "socket.io": "^2.1.0",
     "sprintf": "^0.1.5",
     "tmp": "0.0.28",
-    "socket.io": "^2.1.0",
-    "cheerio": "^1.0.0-rc.2",
-    "html-to-text": "^4.0.0",
     "underscore": "^1.9.0",
-    "request": "^2.85.0",
-    "image-downloader": "^3.3.0",
-    "shelljs": "^0.8.1"
+    "mysql": "^2.15.0",
+    "config": "^1.30.0"
   },
   "devDependencies": {
     "nodemon": "^1.9.1"
   },
   "bin": {
     "cvg": "index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/wwwtyro/canvas-video-generator.git"
-  },
-  "keywords": [
-    "canvas",
-    "video"
-  ],
-  "bugs": {
-    "url": "https://github.com/wwwtyro/canvas-video-generator/issues"
-  },
-  "homepage": "https://github.com/wwwtyro/canvas-video-generator#readme"
+  }
 }

@@ -1,13 +1,11 @@
 var request = require('request'),
     fs = require('fs'),
     _ = require('underscore'),
-    download = require('image-downloader'),
-    sh = require('shelljs');
+    download = require('image-downloader');
 
 var vnexpressParser = require('./vnexpress.js');
 
-sh.cd('..');
-var parseUrl = function (url, client) {
+var parseUrl = function (url, imgPath, client) {
     request(url, {
         timeout: 30000
     }, function (error, response, body) {
@@ -26,16 +24,16 @@ var parseUrl = function (url, client) {
                 var downloaded = 0;
                 var downloadedFilePath = [];
                 _.each(result.images, function (url, index) {
-                    console.log("Download iamge: ", index);
                     download.image({
                             url: url,
-                            dest: sh.pwd() + '/slideshow_player/images'
+                            dest: imgPath
                         })
                         .then(({filename,image}) => {
                             downloadedFilePath.push('images/' + getFileName(filename));
                             downloaded++;
 
                             if (downloaded == result.images.length) {
+                                console.log("Finish fetch url: [" + data.url + "]");
                                 client.emit('article', {
                                     content: result.content,
                                     images: downloadedFilePath

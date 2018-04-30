@@ -1,0 +1,19 @@
+{
+    "app": {
+        "port": 3172
+    },
+    "dbConfig": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "Welcome1",
+        "dbName": "youtube"
+    },
+    "path": {
+        "imagePath": {
+            "download": "/Users/tranngockhai/TuluProjects/YoutubeVideoMaker/slideshow_player/images",
+            "preRender": "/Users/tranngockhai/tmp/youtube/images"
+        },
+        "videoPath": "/Users/tranngockhai/tmp/youtube/videos"
+    }
+}

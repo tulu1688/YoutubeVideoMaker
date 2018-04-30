@@ -1,12 +1,15 @@
 var browserify = require('browserify');
-var bodyParser = require('body-parser');
-var minimist = require('minimist');
-var express = require('express');
-var sprintf = require('sprintf').sprintf;
-var tmp = require('tmp');
-var cp = require('child_process');
-var fs = require('fs');
-var article_parser = require('./article_parser/parse.js');
+    bodyParser = require('body-parser');
+    minimist = require('minimist');
+    express = require('express');
+    sprintf = require('sprintf').sprintf;
+    tmp = require('tmp');
+    cp = require('child_process');
+    fs = require('fs'),
+    config = require('config');
+
+var article_parser = require('./article_parser/parse.js'),
+    dal = require('./dal.js');
 
 var args = minimist(process.argv.slice(2));
 if (args.h || args.help) {
@@ -20,13 +23,21 @@ if (args.h || args.help) {
     process.exit();
 }
 
-var PORT = args.p || args.port || 3172;
+var PORT = args.p || args.port || config.get('app.port') || 3172;
 var OUTDIR = args.o || args.odir || process.cwd();
 var NOCLEAN = args.n || args.noclean || false;
 
 
+// Connect db first
+dal.connectDb(
+    config.get('dbConfig.host'),
+    config.get('dbConfig.user'),
+    config.get('dbConfig.password'),
+);
+
 var app = express();
 var http = require('http').Server(app);
+var preRenderDir = config.get('path.imagePath.preRender');
 tempDir = tmp.dirSync({
     unsafeCleanup: true
 });
@@ -60,15 +71,16 @@ app.post('/render', function (req, res) {
     var oldTemp = tempDir;
     console.log("Begining rendering of your video. This might take a long time...")
     var ffmpeg = cp.spawn('ffmpeg', [
-    '-framerate', '24',
-    '-start_number', '0',
-    '-i', 'image-%010d.png',
-    '-refs', '5',
-    '-c:v', 'libx264',
-    '-preset', 'veryslow',
-    '-crf', '18',
-    sprintf('%s/%s.mp4', OUTDIR, req.body.filename)
-  ], {
+        '-framerate', '24',
+        '-start_number', '0',
+        '-i', 'image-%010d.png',
+        '-refs', '5',
+        '-c:v', 'libx264',
+        '-preset', 'veryslow',
+        '-pix_fmt', 'yuv420p',
+        '-crf', '18',
+        sprintf('%s/%s.mp4', OUTDIR, req.body.filename)
+    ], {
         cwd: oldTemp.name,
         stdio: 'inherit'
     });
@@ -90,12 +102,16 @@ app.post('/render', function (req, res) {
 
 var io = require('socket.io')(http);
 io.set('origins', '*:*');
-http.listen(PORT, function(){
+http.listen(PORT, function () {
     console.log("Canvas video generator server listening on port " + PORT + ".");
 });
-io.sockets.on('connection', function(client){
-    client.on("url", function(data){
+io.sockets.on('connection', function (client) {
+    client.on("url", function (data) {
         console.log("Start fetching url: " + data.url);
-        article_parser.fetch(data.url, client);
+        article_parser.fetch(
+            data.url,
+            config.get('path.imagePath.download'),
+            client
+        );
     });
 });
