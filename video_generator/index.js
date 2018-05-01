@@ -1,11 +1,11 @@
-var browserify = require('browserify');
-bodyParser = require('body-parser');
-minimist = require('minimist');
-express = require('express');
-sprintf = require('sprintf').sprintf;
-tmp = require('tmp');
-cp = require('child_process');
-fs = require('fs'),
+var browserify = require('browserify'),
+    bodyParser = require('body-parser'),
+    minimist = require('minimist'),
+    express = require('express'),
+    sprintf = require('sprintf').sprintf,
+    cp = require('child_process'),
+    fs = require('fs'),
+    fs_extra = require('fs-extra'),
     async = require('async'),
     config = require('config');
 
@@ -40,10 +40,7 @@ dal.connectDb(
 var app = express();
 var http = require('http').Server(app);
 var preRenderDir = config.get('path.imagePath.preRender');
-tempDir = tmp.dirSync({
-    unsafeCleanup: true
-});
-
+var videoDir = config.get('path.videoPath');
 
 app.use(function (req, res, next) {
     res.header("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -63,14 +60,24 @@ app.use(bodyParser.urlencoded({
 app.post('/addFrame', function (req, res) {
     var data = req.body.png.replace(/^data:image\/png;base64,/, "");
     var filename = sprintf('image-%010d.png', parseInt(req.body.frame));
-    fs.writeFileSync(sprintf('%s/%s', tempDir.name, filename), data, 'base64');
+    var outDir = sprintf('%s/%s', preRenderDir, req.body.video_id);
+    
+    fs_extra.ensureDirSync(outDir);
+    
+    fs.writeFileSync(sprintf('%s/%s', outDir, filename), data, 'base64');
+    
     res.end();
     process.stdout.write(sprintf('Recieved frame %s\r', req.body.frame));
 });
 
 
 app.post('/render', function (req, res) {
-    var oldTemp = tempDir;
+    var imgDir = sprintf('%s/%s', preRenderDir, req.body.filename);
+    var fullFilePath = sprintf('%s/%s.mp4', videoDir, req.body.filename);
+    
+    fs_extra.ensureDirSync(videoDir);
+    fs_extra.removeSync(fullFilePath);
+    
     console.log("Begining rendering of your video. This might take a long time...")
     var ffmpeg = cp.spawn('ffmpeg', [
         '-framerate', '24',
@@ -81,23 +88,17 @@ app.post('/render', function (req, res) {
         '-preset', 'veryslow',
         '-pix_fmt', 'yuv420p',
         '-crf', '18',
-        sprintf('%s/%s.mp4', OUTDIR, req.body.filename)
+        fullFilePath
     ], {
-        cwd: oldTemp.name,
+        cwd: imgDir,
         stdio: 'inherit'
     });
+    
     ffmpeg.on('close', function (code) {
-        console.log(sprintf('Finished rendering video. You can find it at %s/%s.mp4', OUTDIR, req.body.filename));
-        if (NOCLEAN) {
-            console.log(sprintf('Not cleaning temp files. You can find them in %s', oldTemp.name));
-        } else {
-            console.log(sprintf('Cleaning up temp files in %s', oldTemp.name));
-            oldTemp.removeCallback();
-        }
+        console.log(sprintf('Finished rendering video. You can find it at %s/%s.mp4', videoDir, req.body.filename));
+        fs_extra.removeSync(imgDir);
     });
-    tempDir = tmp.dirSync({
-        unsafeCleanup: true
-    });
+    
     res.end();
 });
 
@@ -137,6 +138,7 @@ io.sockets.on('connection', function (client) {
             },
             function (data, callback) {
                     console.log("==> Finish fetch article content for [" + data.url + "] url");
+                    data.status = 'success';
                     client.emit('article', data);
                     callback(null, data.ref_id);
             }
@@ -149,8 +151,11 @@ io.sockets.on('connection', function (client) {
                         console.error("Parse fail with error", err);
                         dal.updateVideoInfoStatus(err.ref_id, 'FETCH_FAIL', 'GENERAL_ERROR', fectchCallback);
                     }
-                    
-                    client.emit('article', data);
+
+                    client.emit('article', {
+                        status: 'fail',
+                        ref_id: err.ref_id
+                    });
                 } else {
                     dal.updateVideoInfoStatus(data, 'FETCH_SUCCESS', null, fectchCallback);
                 }

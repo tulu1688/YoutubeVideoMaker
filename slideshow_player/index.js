@@ -13,28 +13,37 @@ var slide_generator = require('./slide_generator.js');
 var fetchUrlBtn = document.getElementById("fetchUrlBtn");
 var urlTxt = document.getElementById("urlTxt");
 var articleContentEditText = document.getElementById("articleContentEditText");
+var videoInfoId = null;
 
-fetchUrlBtn.onclick = function(){
-    socket.emit("url", {url: urlTxt.value});
+fetchUrlBtn.onclick = function () {
+    socket.emit("url", {
+        url: urlTxt.value
+    });
 }
 
 // Socket.io command
-socket.on('connect', function(){
+socket.on('connect', function () {
     console.log("Socket.io connected");
 });
-socket.on('article', function(data){
-    if (data.images.length) {
-        slides = slide_generator.generateSlides(data.images);
-        slides.transitions = GlslTransitions;
+socket.on('article', function (data) {
+    if (data.status == 'success') {
+        if (data.images.length) {
+            slides = slide_generator.generateSlides(data.images);
+            slides.transitions = GlslTransitions;
+        }
+
+        videoInfoId = data.ref_id;
+        articleContentEditText.value = data.content;
+    } else if (data.status == 'fail') {
+        articleContentEditText.value = '';
     }
-    articleContentEditText.value = data.content;
 });
-socket.on('disconnect', function(){});
+socket.on('disconnect', function () {});
 
 // Create the Diaporama (empty for now)
 var diaporama = null;
 
-function setupDiaporama(){
+function setupDiaporama() {
     var diaporama = Diaporama(document.getElementById("diaporama"), null, {
         autoplay: false,
         loop: false
@@ -53,11 +62,11 @@ function setupDiaporama(){
         console.log("Slideshow is ended");
         stopAndRenderVideo();
     });
-    
+
     return diaporama;
 }
 
-function resetDiaporama(){
+function resetDiaporama() {
     diaporama.destroy();
     canvas.parentNode.removeChild(canvas);
     canvas = null;
@@ -73,15 +82,19 @@ var paragrahps = [];
 var startBtn = document.getElementById("startBtn");
 var stopBtn = document.getElementById("stopBtn");
 startBtn.onclick = function () {
-    diaporama = setupDiaporama();
-    diaporama.data = slides;
-    
-    if (articleContentEditText.value)
-        paragrahps = text_utils.splitArticleToLines(articleContentEditText.value)
-    
-    diaporama.play();
-    isRecording = true;
-    renderVideo();
+    if (videoInfoId) {
+        frameIndex = 0;
+        
+        diaporama = setupDiaporama();
+        diaporama.data = slides;
+
+        if (articleContentEditText.value)
+            paragrahps = text_utils.splitArticleToLines(articleContentEditText.value)
+
+        diaporama.play();
+        isRecording = true;
+        renderVideo();
+    }
 };
 stopBtn.onclick = function () {
     stopAndRenderVideo();
@@ -93,7 +106,7 @@ stopBtn.onclick = function () {
 var canvas = null;
 var copied_canvas = document.getElementById('2dCanvas');
 var copied_context = copied_canvas.getContext('2d');
-copied_context.font="45px Verdana";
+copied_context.font = "45px Verdana";
 copied_context.fillStyle = '#fff';
 copied_context.shadowColor = '#000';
 copied_context.shadowOffsetX = 3;
@@ -101,20 +114,17 @@ copied_context.shadowOffsetY = 0;
 copied_context.shadowBlur = 10;
 
 function stopAndRenderVideo() {
-    var now = new Date();
-    var fileName = "example_" + dateFormat(now, "yyyymmdd_HHMMss");
-    isRecording = false;
-    cvg.render(fileName);
-    
+    isRecording = false;    
+    cvg.render('' + videoInfoId);
     copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
 }
 
 function renderVideo() {
     if (isRecording) {
-        cvg.addFrame(copied_canvas);
-        
+        cvg.addFrame(copied_canvas, videoInfoId, frameIndex);
+
         // Check to load subtitle
-        frameIndex ++;
+        frameIndex++;
         if (frameIndex >= resetIndex) {
             subtitle = paragrahps.shift();
             if (subtitle) {
@@ -127,16 +137,16 @@ function renderVideo() {
         }
 
         requestAnimationFrame(renderVideo);
-        
+
         if (copied_canvas && canvas) {
             copied_context.drawImage(canvas, 0, 0);
         }
-        
+
         // Generate text and add here
         var startY = 500;
         if (subtitle) {
             printInfos = text_utils.getLines(copied_context, subtitle, 1100);
-            for (var i=0;i< printInfos.lines.length ;i++) {
+            for (var i = 0; i < printInfos.lines.length; i++) {
                 var line = printInfos.lines[i];
                 text_utils.writeLine(copied_context, line, 1200, startY);
                 startY += 50;
