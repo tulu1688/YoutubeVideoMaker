@@ -5,10 +5,23 @@ var request = require('request'),
 
 var vnexpressParser = require('./vnexpress.js');
 
-var parseUrl = function (url, imgPath, client) {
+var parseUrl = function (video, imgPath, callback) {
+    var url = video.url;
+    var youtubeVideoInfoId = video.id;
+    
     request(url, {
         timeout: 30000
     }, function (error, response, body) {
+        if (error)
+            callback(err, null);
+        
+        if (response.statusCode != 200)
+            callback({
+                internelError: 'READ_URL_FAIL',
+                status: response.statusCode,
+                message: response.statusMessage
+            }, null);
+        
         if (body) {
             var parser = null;
             if (url.indexOf('dantri.com.vn') > -1) {
@@ -23,31 +36,38 @@ var parseUrl = function (url, imgPath, client) {
                 // Download images
                 var downloaded = 0;
                 var downloadedFilePath = [];
-                _.each(result.images, function (url, index) {
-                    download.image({
-                            url: url,
-                            dest: imgPath
-                        })
-                        .then(({filename,image}) => {
-                            downloadedFilePath.push('images/' + getFileName(filename));
-                            downloaded++;
+                
+                if (result) {
+                    _.each(result.images, function (url, index) {
+                        download.image({
+                                url: url,
+                                dest: imgPath
+                            })
+                            .then(({
+                                filename,
+                                image
+                            }) => {
+                                downloadedFilePath.push('images/' + getFileName(filename));
+                                downloaded++;
 
-                            if (downloaded == result.images.length) {
-                                console.log("Finish fetch url: [" + data.url + "]");
-                                client.emit('article', {
-                                    content: result.content,
-                                    images: downloadedFilePath
-                                });
-                            }
-                        }).catch((err) => {
-                            // Push error to db and debug
-                            throw err
-                        })
-                });
+                                if (downloaded == result.images.length)
+                                    callback(null, {
+                                        ref_id: youtubeVideoInfoId,
+                                        url: url,
+                                        content: result.content,
+                                        images: downloadedFilePath
+                                    });
+                            }).catch((err) => {
+                                err.ref_id = youtubeVideoInfoId;
+                                callback(err, null);
+                            })
+                    });
+                } else {
+                    callback({internelError: 'PARSE_FAIL', ref_id: youtubeVideoInfoId},null);
+                }
+            } else {
+                callback({internelError: 'NO_PARSER', ref_id: youtubeVideoInfoId},null);
             }
-        } else {
-            // Push error to db and debug
-            console.log('error', url);
         }
     });
 }

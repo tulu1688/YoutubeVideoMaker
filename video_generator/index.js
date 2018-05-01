@@ -1,11 +1,12 @@
 var browserify = require('browserify');
-    bodyParser = require('body-parser');
-    minimist = require('minimist');
-    express = require('express');
-    sprintf = require('sprintf').sprintf;
-    tmp = require('tmp');
-    cp = require('child_process');
-    fs = require('fs'),
+bodyParser = require('body-parser');
+minimist = require('minimist');
+express = require('express');
+sprintf = require('sprintf').sprintf;
+tmp = require('tmp');
+cp = require('child_process');
+fs = require('fs'),
+    async = require('async'),
     config = require('config');
 
 var article_parser = require('./article_parser/parse.js'),
@@ -33,6 +34,7 @@ dal.connectDb(
     config.get('dbConfig.host'),
     config.get('dbConfig.user'),
     config.get('dbConfig.password'),
+    config.get('dbConfig.dbName')
 );
 
 var app = express();
@@ -107,11 +109,50 @@ http.listen(PORT, function () {
 });
 io.sockets.on('connection', function (client) {
     client.on("url", function (data) {
-        console.log("Start fetching url: " + data.url);
-        article_parser.fetch(
-            data.url,
-            config.get('path.imagePath.download'),
-            client
+        var fectchCallback = function (err, data) {
+            if (err) console.error(error);
+            console.log(data);
+        };
+
+        async.waterfall([
+            function (callback) {
+                    console.log("==> Finding [" + data.url + "] url in db");
+                    dal.getVideoInfosFromUrl(data.url, callback);
+            },
+            function (videos, callback) {
+                    if (!videos.length) {
+                        console.log("==> Creating video info for [" + data.url + "] url in db");
+                        dal.createVideoInfoFromUrl(data.url, "CREATED", callback);
+                    } else {
+                        video = videos.shift();
+                        callback(null, video);
+                    }
+            },
+            function (video, callback) {
+                    console.log("==> Start fetching [" + video.url + "] url");
+                    article_parser.fetch(
+                        video,
+                        config.get('path.imagePath.download'),
+                        callback);
+            },
+            function (data, callback) {
+                    console.log("==> Finish fetch article content for [" + data.url + "] url");
+                    client.emit('article', data);
+                    callback(null, data.ref_id);
+            }
+        ],
+            function (err, data) {
+                if (err) {
+                    if (err.internelError) {
+                        dal.updateVideoInfoStatus(err.ref_id, 'FETCH_FAIL', err.internelError, fectchCallback);
+                    } else {
+                        console.error("Parse fail with error", err);
+                        dal.updateVideoInfoStatus(err.ref_id, 'FETCH_FAIL', 'GENERAL_ERROR', fectchCallback);
+                    }
+                } else {
+                    dal.updateVideoInfoStatus(data, 'FETCH_SUCCESS', null, fectchCallback);
+                }
+            }
         );
     });
 });
