@@ -1,6 +1,7 @@
 var request = require('request'),
     fs = require('fs'),
     _ = require('underscore'),
+    async = require('async'),
     download = require('image-downloader');
 
 var vnexpressParser = require('./vnexpress.js');
@@ -8,21 +9,21 @@ var vnexpressParser = require('./vnexpress.js');
 var parseUrl = function (video, imgPath, callback) {
     var url = video.url;
     var youtubeVideoInfoId = video.id;
-    
+
     request(url, {
         timeout: 30000
     }, function (error, response, body) {
-        if (error)
+        if (error) {
+            err.ref_id = youtubeVideoInfoId;
             callback(err, null);
-        
-        if (response.statusCode != 200)
+        } else if (response.statusCode != 200) {
             callback({
                 internelError: 'READ_URL_FAIL',
+                ref_id: youtubeVideoInfoId,
                 status: response.statusCode,
                 message: response.statusMessage
             }, null);
-        
-        if (body) {
+        } else {
             var parser = null;
             if (url.indexOf('dantri.com.vn') > -1) {
                 //                parser = dantriParser;
@@ -34,39 +35,52 @@ var parseUrl = function (video, imgPath, callback) {
                 var result = parser.parse(url, body);
 
                 // Download images
-                var downloaded = 0;
                 var downloadedFilePath = [];
-                
-                if (result) {
-                    _.each(result.images, function (url, index) {
-                        download.image({
-                                url: url,
-                                dest: imgPath
-                            })
-                            .then(({
-                                filename,
-                                image
-                            }) => {
-                                downloadedFilePath.push('images/' + getFileName(filename));
-                                downloaded++;
 
-                                if (downloaded == result.images.length)
-                                    callback(null, {
-                                        ref_id: youtubeVideoInfoId,
-                                        url: url,
-                                        content: result.content,
-                                        images: downloadedFilePath
-                                    });
-                            }).catch((err) => {
+                if (result) {
+                    async.each(result.images,
+                        function (url, downloadImgCallback) {
+                            console.log('Dowloading image from [' + url + '] url');
+                            download.image({
+                                    url: url,
+                                    dest: imgPath
+                                })
+                                .then(({
+                                    filename,
+                                    image
+                                }) => {
+                                    downloadedFilePath.push('images/' + getFileName(filename));
+                                    downloadImgCallback();
+                                }).catch((err) => {
+                                    downloadImgCallback(err);
+                                });
+                        },
+                        function (err) {
+                            if (err) {
                                 err.ref_id = youtubeVideoInfoId;
                                 callback(err, null);
-                            })
-                    });
+                            } else {
+                                callback(null, {
+                                    ref_id: youtubeVideoInfoId,
+                                    url: url,
+                                    content: result.content,
+                                    images: downloadedFilePath
+                                });
+
+                            }
+                        }
+                    );
                 } else {
-                    callback({internelError: 'PARSE_FAIL', ref_id: youtubeVideoInfoId},null);
+                    callback({
+                        internelError: 'PARSE_FAIL',
+                        ref_id: youtubeVideoInfoId
+                    }, null);
                 }
             } else {
-                callback({internelError: 'NO_PARSER', ref_id: youtubeVideoInfoId},null);
+                callback({
+                    internelError: 'NO_PARSER',
+                    ref_id: youtubeVideoInfoId
+                }, null);
             }
         }
     });
