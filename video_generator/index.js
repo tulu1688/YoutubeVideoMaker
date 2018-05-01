@@ -149,6 +149,8 @@ io.sockets.on('connection', function (client) {
                         console.error("Parse fail with error", err);
                         dal.updateVideoInfoStatus(err.ref_id, 'FETCH_FAIL', 'GENERAL_ERROR', fectchCallback);
                     }
+                    
+                    client.emit('article', data);
                 } else {
                     dal.updateVideoInfoStatus(data, 'FETCH_SUCCESS', null, fectchCallback);
                 }
