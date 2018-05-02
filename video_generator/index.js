@@ -85,7 +85,7 @@ app.post('/render', function (req, res) {
         '-i', 'image-%010d.png',
         '-refs', '5',
         '-c:v', 'libx264',
-        '-preset', 'veryslow',
+        '-preset', 'fast',
         '-pix_fmt', 'yuv420p',
         '-crf', '18',
         fullFilePath

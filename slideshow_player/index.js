@@ -76,6 +76,7 @@ function resetDiaporama() {
 var isRecording = false;
 var subtitle = '';
 var frameIndex = 0;
+var globalFrameIndex = 0;
 var resetIndex = 24; // 1 sec without subtitle
 var paragrahps = [];
 
@@ -84,6 +85,7 @@ var stopBtn = document.getElementById("stopBtn");
 startBtn.onclick = function () {
     if (videoInfoId) {
         frameIndex = 0;
+        globalFrameIndex = 0;
         
         diaporama = setupDiaporama();
         diaporama.data = slides;
@@ -121,10 +123,12 @@ function stopAndRenderVideo() {
 
 function renderVideo() {
     if (isRecording) {
-        cvg.addFrame(copied_canvas, videoInfoId, frameIndex);
+        cvg.addFrame(copied_canvas, videoInfoId, globalFrameIndex);
 
         // Check to load subtitle
         frameIndex++;
+        globalFrameIndex++;
+        
         if (frameIndex >= resetIndex) {
             subtitle = paragrahps.shift();
             if (subtitle) {
