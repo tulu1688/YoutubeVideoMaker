@@ -158,9 +158,8 @@ function renderVideo() {
             } else {
                 notification_utils.showNotification("Quá trình tạo ảnh cho video kết thúc", "alert-success", "notification-container");
                 
+                cvg.notifyFinishCapture(videoInfoId, globalFrameIndex);
                 stopAndRenderVideo();
-                
-                cvg.notifyFinishCapture(videoInfoId);
             }
         }
 

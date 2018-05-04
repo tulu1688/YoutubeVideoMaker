@@ -103,14 +103,20 @@ app.post('/render', function (req, res) {
 });
 
 
-app.post('/notification/finish-capturing', function (req, res){
+app.post('/notification/finish-capturing', function (req, res) {
     var videoId = req.body.video_id;
     console.log("=========================================");
     console.log("\tFinish capturing images for [" + videoId + "] videoId");
-    dal.updateVideoInfoStatus(videoId, 'CAPTURED', null, function (err, data) {
-        if (err) console.error(error);
-        console.log(data);
-    });
+    dal.updateVideoInfos(
+        videoId, {
+            status: 'CAPTURED',
+            frame_count: req.body.total_frame
+        },
+        function (err, data) {
+            if (err) console.error(error);
+            console.log(data);
+        }
+    );
 
     res.end();
 });
@@ -160,10 +166,16 @@ io.sockets.on('connection', function (client) {
             function (err, data) {
                 if (err) {
                     if (err.internelError) {
-                        dal.updateVideoInfoStatus(err.ref_id, 'FETCH_FAIL', err.internelError, fectchCallback);
+                        dal.updateVideoInfos(err.ref_id, {
+                            status: 'FETCH_FAIL',
+                            status_message: err.internelError
+                        }, fectchCallback);
                     } else {
                         console.error("Parse fail with error", err);
-                        dal.updateVideoInfoStatus(err.ref_id, 'FETCH_FAIL', 'GENERAL_ERROR', fectchCallback);
+                        dal.updateVideoInfos(err.ref_id, {
+                            status: 'FETCH_FAIL',
+                            status_message: 'GENERAL_ERROR'
+                        }, fectchCallback);
                     }
 
                     client.emit('article', {
@@ -171,7 +183,9 @@ io.sockets.on('connection', function (client) {
                         ref_id: err.ref_id
                     });
                 } else {
-                    dal.updateVideoInfoStatus(data, 'FETCH_SUCCESS', null, fectchCallback);
+                    dal.updateVideoInfos(data, {
+                        status: 'FETCH_SUCCESS'
+                    }, fectchCallback);
                 }
             }
         );

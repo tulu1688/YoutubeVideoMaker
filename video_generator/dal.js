@@ -1,7 +1,11 @@
 var mysql = require('mysql');
 var sql = require('sql-bricks');
-var select = sql.select, insert = sql.insert, update = sql.update;
-var or = sql.or, like = sql.like, lt = sql.lt;
+var select = sql.select,
+    insert = sql.insert,
+    update = sql.update;
+var or = sql.or,
+    like = sql.like,
+    lt = sql.lt;
 
 dal = function () {
     this.con = null;
@@ -24,7 +28,9 @@ dal.prototype.connectDb = function (host, user, password, schema) {
 
 dal.prototype.getVideoInfosFromUrl = function (url, callback) {
     var self = this;
-    var queryStr = select().from('video').where({url: url}).toString();
+    var queryStr = select().from('video').where({
+        url: url
+    }).toString();
     self.con.query(queryStr, function (err, rows) {
         if (err)
             callback(err, null);
@@ -34,14 +40,14 @@ dal.prototype.getVideoInfosFromUrl = function (url, callback) {
 
 dal.prototype.createVideoInfoFromUrl = function (url, status, callback) {
     var self = this;
-    var now = new Date().toISOString().replace('T', ' ').replace('Z','');
+    var now = new Date().toISOString().replace('T', ' ').replace('Z', '');
     var transientVideoInfo = {
         url: url,
         status: status,
         created_timestamp: now,
         last_updated_timestamp: now
     };
-    
+
     var queryStr = insert('video', transientVideoInfo).toString();
     self.con.query(queryStr, function (err, result) {
         if (err) {
@@ -56,16 +62,38 @@ dal.prototype.createVideoInfoFromUrl = function (url, status, callback) {
 
 dal.prototype.updateVideoInfoStatus = function (id, status, message, callback) {
     var self = this;
-    
-    var now = new Date().toISOString().replace('T', ' ').replace('Z','');
+
+    var now = new Date().toISOString().replace('T', ' ').replace('Z', '');
     var updatePayload = {
         status: status,
         last_updated_timestamp: now
     };
     if (message)
         updatePayload.status_message = message;
-    
-    var queryStr = update('video', updatePayload).where({id: id}).toString();
+
+    var queryStr = update('video', updatePayload).where({
+        id: id
+    }).toString();
+    self.con.query(queryStr, function (err, result) {
+        if (err) {
+            console.log(err);
+            callback(err, null);
+        } else {
+            callback(null, "DONE");
+        }
+    });
+}
+
+dal.prototype.updateVideoInfos = function (id, updatedData, callback) {
+    var self = this;
+
+    var now = new Date().toISOString().replace('T', ' ').replace('Z', '');
+    var updatePayload = updatedData;
+    updatePayload.last_updated_timestamp = now;
+
+    var queryStr = update('video', updatePayload).where({
+        id: id
+    }).toString();
     self.con.query(queryStr, function (err, result) {
         if (err) {
             console.log(err);

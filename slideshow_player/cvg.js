@@ -35,14 +35,15 @@ CVG.prototype.render = function (filename) {
     });
 }
 
-CVG.prototype.notifyFinishCapture = function(videoInfoId){
+CVG.prototype.notifyFinishCapture = function(videoInfoId, totalFrames){
     self = this;
 
     ajax({
         url: self.VIDEO_GENERATOR_URL + '/notification/finish-capturing',
         method: 'post',
         parameters: {
-            video_id: videoInfoId
+            video_id: videoInfoId,
+            total_frame: totalFrames
         }
     }).error(function (err) {
         console.warn(err);
