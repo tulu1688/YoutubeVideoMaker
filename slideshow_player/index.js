@@ -25,6 +25,7 @@ var articleContentEditText = document.getElementById("articleContentEditText");
 
 // Article related vars
 var paragrahps = [];
+var slides = [];
 var videoInfoId = null;
 
 // Control the diaporama
@@ -57,6 +58,10 @@ socket.on('connect', function () {
     console.log("Socket.io connected");
 });
 socket.on('article', function (data) {
+    // Reset data when finish crawl any url
+    paragrahps = [];
+    slides = [];
+
     if (data.status == 'success') {
         if (data.images.length) {
             slides = slide_generator.generateSlides(data.images);
@@ -65,8 +70,6 @@ socket.on('article', function (data) {
 
         videoInfoId = data.ref_id;
         articleContentEditText.value = data.content;
-        // Reset paragraphs
-        paragrahps = [];
     } else if (data.status == 'fail') {
         articleContentEditText.value = '';
     }
@@ -104,7 +107,7 @@ function resetDiaporama() {
 
 fetchUrlBtn.onclick = function () {
     notification_utils.clearNotifications();
-    
+
     socket.emit("url", {
         url: urlTxt.value
     });
@@ -112,8 +115,8 @@ fetchUrlBtn.onclick = function () {
 
 startBtn.onclick = function () {
     notification_utils.clearNotifications();
-    
-    if (videoInfoId) {
+
+    if (videoInfoId && slides) {
         frameIndex = 0;
         globalFrameIndex = 0;
 
@@ -126,8 +129,11 @@ startBtn.onclick = function () {
         diaporama.play();
         isRecording = true;
         renderVideo();
+    } else {
+        notification_utils.showNotification("Nội dung không hợp lệ", "alert-danger", "notification-container");
     }
 };
+
 stopBtn.onclick = function () {
     stopAndRenderVideo();
 };
@@ -157,7 +163,7 @@ function renderVideo() {
                 frameIndex = 0;
             } else {
                 notification_utils.showNotification("Quá trình tạo ảnh cho video kết thúc", "alert-success", "notification-container");
-                
+
                 cvg.notifyFinishCapture(videoInfoId, globalFrameIndex);
                 stopAndRenderVideo();
             }
