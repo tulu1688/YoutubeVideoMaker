@@ -16,7 +16,8 @@ module.exports = function (client) {
                     console.log("=========================================")
                     console.log("\tFinding [" + data.url + "] url in db");
                     dal.searchVideos({
-                        url: data.url
+                        url: data.url,
+                        is_deleted: false
                     }, callback);
             },
             function (videos, callback) {

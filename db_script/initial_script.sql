@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS youtube.video
     tags VARCHAR(256),
     title VARCHAR(256),
     description VARCHAR(1024),
+    is_deleted TINYINT(1) DEFAULT 0,
     created_timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6) NOT NULL,
     last_updated_timestamp TIMESTAMP(6) DEFAULT CURRENT_TIMESTAMP(6) NOT NULL
 );

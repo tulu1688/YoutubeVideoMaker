@@ -44,6 +44,7 @@ dal.prototype.createVideoInfoFromUrl = function (url, status, callback) {
     var transientVideoInfo = {
         url: url,
         status: status,
+        is_deleted: false,
         created_timestamp: now,
         last_updated_timestamp: now
     };
