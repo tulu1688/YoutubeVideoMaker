@@ -5,9 +5,10 @@ var dateFormat = require('dateformat');
 var socket = require('socket.io-client')('http://localhost:3172');
 var cheerio = require('cheerio');
 
-var cvg = require('./cvg.js');
-var text_utils = require('./text_utils.js');
-var slide_generator = require('./slide_generator.js');
+var cvg = require('./cvg.js'),
+    text_utils = require('./text_utils.js'),
+    slide_generator = require('./slide_generator.js'),
+    notification_utils = require('./notification_utils.js');
 
 // Widgets
 var fetchUrlBtn = document.getElementById("fetchUrlBtn");
@@ -90,7 +91,7 @@ startBtn.onclick = function () {
     if (videoInfoId) {
         frameIndex = 0;
         globalFrameIndex = 0;
-        
+
         diaporama = setupDiaporama();
         diaporama.data = slides;
 
@@ -119,10 +120,10 @@ copied_context.shadowOffsetY = 0;
 copied_context.shadowBlur = 10;
 
 function stopAndRenderVideo() {
-    isRecording = false;    
+    isRecording = false;
     cvg.render('' + videoInfoId);
     copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
-    
+
     resetDiaporama();
 }
 
@@ -133,7 +134,7 @@ function renderVideo() {
         // Check to load subtitle
         frameIndex++;
         globalFrameIndex++;
-        
+
         if (frameIndex >= resetIndex) {
             subtitle = paragrahps.shift();
             if (subtitle) {
@@ -141,6 +142,7 @@ function renderVideo() {
                 resetIndex = printInfos.no_of_frames;
                 frameIndex = 0;
             } else {
+                notification_utils.showNotification("Quá trình tạo ảnh cho video kết thúc", "alert-success", "notification-container");
                 stopAndRenderVideo();
             }
         }
