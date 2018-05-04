@@ -6,11 +6,8 @@ slideGenerator = function () {
     this.images = [];
 };
 
-slideGenerator.prototype.loadImages = function (images) {
-    this.images = this.images.concat(images);
-}
-
 slideGenerator.prototype.generateSlides = function (images) {
+    this.images = [];
     this.images = this.images.concat(images);
     var slides = [];
 
