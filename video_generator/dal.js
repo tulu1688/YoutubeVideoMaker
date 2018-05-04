@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var sql = require('sql-bricks');
+
 var select = sql.select,
     insert = sql.insert,
     update = sql.update;
@@ -69,6 +70,7 @@ dal.prototype.updateVideoInfos = function (id, updatedData, callback) {
     var queryStr = update('video', updatePayload).where({
         id: id
     }).toString();
+    
     self.con.query(queryStr, function (err, result) {
         if (err) {
             console.log(err);

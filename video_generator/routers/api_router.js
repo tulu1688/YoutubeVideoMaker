@@ -6,7 +6,7 @@ var express = require('express'),
     cp = require('child_process'),
     router = express.Router();
 
-var dal = require('./dal.js');
+var dal = require('../dal.js');
 
 var preRenderDir = config.get('path.imagePath.preRender');
 var videoDir = config.get('path.videoPath');
