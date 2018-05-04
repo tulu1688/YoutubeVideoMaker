@@ -14,8 +14,8 @@ var parseUrl = function (video, imgPath, callback) {
         timeout: 30000
     }, function (error, response, body) {
         if (error) {
-            err.ref_id = youtubeVideoInfoId;
-            callback(err, null);
+            error.ref_id = youtubeVideoInfoId;
+            callback(error, null);
         } else if (response.statusCode != 200) {
             callback({
                 internelError: 'READ_URL_FAIL',
