@@ -1,14 +1,14 @@
 var ajax = require('marmottajax');
 
 CVG = function () {
-    this.VIDEO_GENERATOR_URL = 'http://localhost:3172'
+    this.VIDEO_GENERATOR_URL = 'http://localhost:3172/v1.0'
 };
 
 CVG.prototype.addFrame = function (canvas, videoInfoId, frameId) {
     self = this;
 
     ajax({
-        url: self.VIDEO_GENERATOR_URL + '/addFrame',
+        url: self.VIDEO_GENERATOR_URL + '/add-frame',
         method: 'post',
         parameters: {
             png: canvas.toDataURL(),

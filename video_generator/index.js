@@ -27,6 +27,7 @@ if (args.h || args.help) {
 var PORT = args.p || args.port || config.get('app.port') || 3172;
 var OUTDIR = args.o || args.odir || process.cwd();
 var NOCLEAN = args.n || args.noclean || false;
+var APIVERSION = config.get('app.apiVersion');
 
 
 // Connect db first
@@ -57,7 +58,7 @@ app.use(bodyParser.urlencoded({
 }));
 
 
-app.post('/addFrame', function (req, res) {
+app.post('/' + APIVERSION + '/add-frame', function (req, res) {
     var data = req.body.png.replace(/^data:image\/png;base64,/, "");
     var filename = sprintf('image-%010d.png', parseInt(req.body.frame));
     var outDir = sprintf('%s/%s', preRenderDir, req.body.video_id);
@@ -71,7 +72,7 @@ app.post('/addFrame', function (req, res) {
 });
 
 
-app.post('/render', function (req, res) {
+app.post('/' + APIVERSION + '/render', function (req, res) {
     var imgDir = sprintf('%s/%s', preRenderDir, req.body.filename);
     var fullFilePath = sprintf('%s/%s.mp4', videoDir, req.body.filename);
 
@@ -103,7 +104,7 @@ app.post('/render', function (req, res) {
 });
 
 
-app.post('/notification/finish-capturing', function (req, res) {
+app.post('/' + APIVERSION + '/notification/finish-capturing', function (req, res) {
     var videoId = req.body.video_id;
     console.log("=========================================");
     console.log("\tFinish capturing images for [" + videoId + "] videoId");

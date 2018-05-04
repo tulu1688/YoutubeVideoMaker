@@ -178,8 +178,6 @@ function renderVideo() {
                 text_utils.writeLine(copied_context, line, 1200, startY);
                 startY += 50;
             }
-        } else {
-            resetIndex = 48; // 2 sec to end
         }
     }
 }

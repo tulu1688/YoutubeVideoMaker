@@ -60,30 +60,6 @@ dal.prototype.createVideoInfoFromUrl = function (url, status, callback) {
     });
 }
 
-dal.prototype.updateVideoInfoStatus = function (id, status, message, callback) {
-    var self = this;
-
-    var now = new Date().toISOString().replace('T', ' ').replace('Z', '');
-    var updatePayload = {
-        status: status,
-        last_updated_timestamp: now
-    };
-    if (message)
-        updatePayload.status_message = message;
-
-    var queryStr = update('video', updatePayload).where({
-        id: id
-    }).toString();
-    self.con.query(queryStr, function (err, result) {
-        if (err) {
-            console.log(err);
-            callback(err, null);
-        } else {
-            callback(null, "DONE");
-        }
-    });
-}
-
 dal.prototype.updateVideoInfos = function (id, updatedData, callback) {
     var self = this;
 
@@ -99,7 +75,7 @@ dal.prototype.updateVideoInfos = function (id, updatedData, callback) {
             console.log(err);
             callback(err, null);
         } else {
-            callback(null, "DONE");
+            callback(null, "\tDONE");
         }
     });
 }
