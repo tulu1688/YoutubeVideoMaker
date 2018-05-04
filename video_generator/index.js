@@ -123,6 +123,26 @@ app.post('/' + APIVERSION + '/notification/finish-capturing', function (req, res
 });
 
 
+app.get('/' + APIVERSION + '/videos/:videoId', function (req, res) {
+    console.log("=========================================");
+    var videoId = req.params.videoId;
+    console.log("\tFinding video info for [" + videoId + "] videoId");
+    
+    dal.searchVideos({
+        id: videoId
+    }, function (err, videos) {
+        if (err) {
+            res.statusCode = 500;
+            console.error("ERROR", err);
+            res.send("Internal server error");
+        } else {
+            console.error("\tDONE");
+            res.send(videos.shift());
+        }
+    });
+});
+
+
 var io = require('socket.io')(http);
 io.set('origins', '*:*');
 http.listen(PORT, function () {
@@ -139,13 +159,16 @@ io.sockets.on('connection', function (client) {
             function (callback) {
                     console.log("=========================================")
                     console.log("\tFinding [" + data.url + "] url in db");
-                    dal.getVideoInfosFromUrl(data.url, callback);
+                    dal.searchVideos({
+                        url: data.url
+                    }, callback);
             },
             function (videos, callback) {
                     if (!videos.length) {
                         console.log("\tCreating video info for [" + data.url + "] url in db");
                         dal.createVideoInfoFromUrl(data.url, "CREATED", callback);
                     } else {
+                        console.log("\tFound " + videos.length + " video(s)");
                         video = videos.shift();
                         callback(null, video);
                     }

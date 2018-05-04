@@ -38,6 +38,17 @@ dal.prototype.getVideoInfosFromUrl = function (url, callback) {
     });
 }
 
+dal.prototype.searchVideos = function (searchCriteria, callback) {
+    var self = this;
+    
+    var queryStr = select().from('video').where(searchCriteria).toString();
+    self.con.query(queryStr, function (err, rows) {
+        if (err)
+            callback(err, null);
+        callback(null, rows);
+    });
+}
+
 dal.prototype.createVideoInfoFromUrl = function (url, status, callback) {
     var self = this;
     var now = new Date().toISOString().replace('T', ' ').replace('Z', '');
