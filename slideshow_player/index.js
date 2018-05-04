@@ -143,7 +143,10 @@ function renderVideo() {
                 frameIndex = 0;
             } else {
                 notification_utils.showNotification("Quá trình tạo ảnh cho video kết thúc", "alert-success", "notification-container");
+                
                 stopAndRenderVideo();
+                
+                cvg.notifyFinishCapture(videoInfoId);
             }
         }
 

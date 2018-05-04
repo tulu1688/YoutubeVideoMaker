@@ -61,11 +61,11 @@ app.post('/addFrame', function (req, res) {
     var data = req.body.png.replace(/^data:image\/png;base64,/, "");
     var filename = sprintf('image-%010d.png', parseInt(req.body.frame));
     var outDir = sprintf('%s/%s', preRenderDir, req.body.video_id);
-    
+
     fs_extra.ensureDirSync(outDir);
-    
+
     fs.writeFileSync(sprintf('%s/%s', outDir, filename), data, 'base64');
-    
+
     res.end();
     process.stdout.write(sprintf('Recieved frame %s\r', req.body.frame));
 });
@@ -74,10 +74,10 @@ app.post('/addFrame', function (req, res) {
 app.post('/render', function (req, res) {
     var imgDir = sprintf('%s/%s', preRenderDir, req.body.filename);
     var fullFilePath = sprintf('%s/%s.mp4', videoDir, req.body.filename);
-    
+
     fs_extra.ensureDirSync(videoDir);
     fs_extra.removeSync(fullFilePath);
-    
+
     console.log("Begining rendering of your video. This might take a long time...")
     var ffmpeg = cp.spawn('ffmpeg', [
         '-framerate', '24',
@@ -93,12 +93,25 @@ app.post('/render', function (req, res) {
         cwd: imgDir,
         stdio: 'inherit'
     });
-    
+
     ffmpeg.on('close', function (code) {
         console.log(sprintf('Finished rendering video. You can find it at %s/%s.mp4', videoDir, req.body.filename));
         fs_extra.removeSync(imgDir);
     });
-    
+
+    res.end();
+});
+
+
+app.post('/notification/finish-capturing', function (req, res){
+    var videoId = req.body.video_id;
+    console.log("=========================================");
+    console.log("\tFinish capturing images for [" + videoId + "] videoId");
+    dal.updateVideoInfoStatus(videoId, 'CAPTURED', null, function (err, data) {
+        if (err) console.error(error);
+        console.log(data);
+    });
+
     res.end();
 });
 
@@ -117,12 +130,13 @@ io.sockets.on('connection', function (client) {
 
         async.waterfall([
             function (callback) {
-                    console.log("==> Finding [" + data.url + "] url in db");
+                    console.log("=========================================")
+                    console.log("\tFinding [" + data.url + "] url in db");
                     dal.getVideoInfosFromUrl(data.url, callback);
             },
             function (videos, callback) {
                     if (!videos.length) {
-                        console.log("==> Creating video info for [" + data.url + "] url in db");
+                        console.log("\tCreating video info for [" + data.url + "] url in db");
                         dal.createVideoInfoFromUrl(data.url, "CREATED", callback);
                     } else {
                         video = videos.shift();
@@ -130,14 +144,14 @@ io.sockets.on('connection', function (client) {
                     }
             },
             function (video, callback) {
-                    console.log("==> Start fetching [" + video.url + "] url");
+                    console.log("\tStart fetching [" + video.url + "] url");
                     article_parser.fetch(
                         video,
                         config.get('path.imagePath.download'),
                         callback);
             },
             function (data, callback) {
-                    console.log("==> Finish fetch article content for [" + data.url + "] url");
+                    console.log("\tFinish fetch article content for [" + data.url + "] url");
                     data.status = 'success';
                     client.emit('article', data);
                     callback(null, data.ref_id);

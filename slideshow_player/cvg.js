@@ -1,14 +1,14 @@
 var ajax = require('marmottajax');
 
 CVG = function () {
-    this.AUTHORITY = 'http://localhost:3172'
+    this.VIDEO_GENERATOR_URL = 'http://localhost:3172'
 };
 
 CVG.prototype.addFrame = function (canvas, videoInfoId, frameId) {
     self = this;
 
     ajax({
-        url: self.AUTHORITY + '/addFrame',
+        url: self.VIDEO_GENERATOR_URL + '/addFrame',
         method: 'post',
         parameters: {
             png: canvas.toDataURL(),
@@ -25,10 +25,24 @@ CVG.prototype.render = function (filename) {
     self.filename = filename || 'untitled';
 
     ajax({
-        url: self.AUTHORITY + '/render',
+        url: self.VIDEO_GENERATOR_URL + '/render',
         method: 'post',
         parameters: {
             filename: self.filename
+        }
+    }).error(function (err) {
+        console.warn(err);
+    });
+}
+
+CVG.prototype.notifyFinishCapture = function(videoInfoId){
+    self = this;
+
+    ajax({
+        url: self.VIDEO_GENERATOR_URL + '/notification/finish-capturing',
+        method: 'post',
+        parameters: {
+            video_id: videoInfoId
         }
     }).error(function (err) {
         console.warn(err);
