@@ -57,6 +57,7 @@ app.use(bodyParser.urlencoded({
     limit: '100mb'
 }));
 
+app.use(express.json());
 
 app.post('/' + APIVERSION + '/add-frame', function (req, res) {
     var data = req.body.png.replace(/^data:image\/png;base64,/, "");
@@ -123,11 +124,12 @@ app.post('/' + APIVERSION + '/notification/finish-capturing', function (req, res
 });
 
 
+// get video detail
 app.get('/' + APIVERSION + '/videos/:videoId', function (req, res) {
     console.log("=========================================");
     var videoId = req.params.videoId;
     console.log("\tFinding video info for [" + videoId + "] videoId");
-    
+
     dal.searchVideos({
         id: videoId
     }, function (err, videos) {
@@ -138,6 +140,28 @@ app.get('/' + APIVERSION + '/videos/:videoId', function (req, res) {
         } else {
             console.error("\tDONE");
             res.send(videos.shift());
+        }
+    });
+});
+
+// Search videos
+app.post('/' + APIVERSION + '/report/videos', function (req, res) {
+    console.log("=========================================");
+    console.log("\tSearching videos");
+    var searchCriteria = {};
+    
+    if (req.body.status) {
+        searchCriteria.status = req.body.status;
+    }
+
+    dal.searchVideos(searchCriteria, function (err, videos) {
+        if (err) {
+            res.statusCode = 500;
+            console.error("ERROR", err);
+            res.send("Internal server error");
+        } else {
+            console.error("\tDONE");
+            res.send(videos);
         }
     });
 });

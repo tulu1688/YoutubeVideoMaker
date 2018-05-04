@@ -26,18 +26,6 @@ dal.prototype.connectDb = function (host, user, password, schema) {
     });
 }
 
-dal.prototype.getVideoInfosFromUrl = function (url, callback) {
-    var self = this;
-    var queryStr = select().from('video').where({
-        url: url
-    }).toString();
-    self.con.query(queryStr, function (err, rows) {
-        if (err)
-            callback(err, null);
-        callback(null, rows);
-    });
-}
-
 dal.prototype.searchVideos = function (searchCriteria, callback) {
     var self = this;
     
