@@ -104,7 +104,6 @@ startBtn.onclick = function () {
 };
 stopBtn.onclick = function () {
     stopAndRenderVideo();
-    resetDiaporama();
 };
 
 
@@ -123,6 +122,8 @@ function stopAndRenderVideo() {
     isRecording = false;    
     cvg.render('' + videoInfoId);
     copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
+    
+    resetDiaporama();
 }
 
 function renderVideo() {
