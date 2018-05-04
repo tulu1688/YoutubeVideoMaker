@@ -19,6 +19,7 @@ NotifUtil.prototype.showNotification = function (message, alertType, containerId
     var span = document.createElement("span");
     span.setAttribute("aria-hidden","true");
     span.appendChild(document.createTextNode("×"));
+    span.id = 'notificationTag';
     button.appendChild(span);
     
     var newContent = document.createTextNode(message);
@@ -26,6 +27,12 @@ NotifUtil.prototype.showNotification = function (message, alertType, containerId
     node.appendChild(newContent);
 
     document.getElementById(containerId).appendChild(node);
+}
+
+NotifUtil.prototype.clearNotifications = function (message, alertType, containerId) {
+    var notifDom = document.getElementById('notificationTag');
+    if (notifDom)
+        notifDom.click();
 }
 
 module.exports = new NotifUtil();

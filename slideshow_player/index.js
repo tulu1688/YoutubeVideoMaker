@@ -10,21 +10,48 @@ var cvg = require('./cvg.js'),
     slide_generator = require('./slide_generator.js'),
     notification_utils = require('./notification_utils.js');
 
+/////////////////////////////////////////////////////////////////////
+//
+// VARIABLES
+//
+/////////////////////////////////////////////////////////////////////
+
 // Widgets
 var fetchUrlBtn = document.getElementById("fetchUrlBtn");
+var startBtn = document.getElementById("startBtn");
+var stopBtn = document.getElementById("stopBtn");
 var urlTxt = document.getElementById("urlTxt");
 var articleContentEditText = document.getElementById("articleContentEditText");
-var videoInfoId = null;
 
 // Article related vars
 var paragrahps = [];
+var videoInfoId = null;
 
-fetchUrlBtn.onclick = function () {
-    socket.emit("url", {
-        url: urlTxt.value
-    });
-}
+// Control the diaporama
+var isRecording = false;
+var subtitle = '';
+var frameIndex = 0;
+var globalFrameIndex = 0;
+var resetIndex = 24; // 1 sec without subtitle
 
+// Canvases and diaporama
+var diaporama = null;
+var canvas = null;
+var copied_canvas = document.getElementById('2dCanvas');
+var copied_context = copied_canvas.getContext('2d');
+copied_context.font = "45px Verdana";
+copied_context.fillStyle = '#fff';
+copied_context.shadowColor = '#000';
+copied_context.shadowOffsetX = 3;
+copied_context.shadowOffsetY = 0;
+copied_context.shadowBlur = 10;
+
+
+/////////////////////////////////////////////////////////////////////
+//
+// CONTROLS
+//
+/////////////////////////////////////////////////////////////////////
 // Socket.io command
 socket.on('connect', function () {
     console.log("Socket.io connected");
@@ -45,9 +72,6 @@ socket.on('article', function (data) {
     }
 });
 socket.on('disconnect', function () {});
-
-// Create the Diaporama (empty for now)
-var diaporama = null;
 
 function setupDiaporama() {
     var diaporama = Diaporama(document.getElementById("diaporama"), null, {
@@ -78,16 +102,17 @@ function resetDiaporama() {
     canvas = null;
 }
 
-// Control the diaporama
-var isRecording = false;
-var subtitle = '';
-var frameIndex = 0;
-var globalFrameIndex = 0;
-var resetIndex = 24; // 1 sec without subtitle
+fetchUrlBtn.onclick = function () {
+    notification_utils.clearNotifications();
+    
+    socket.emit("url", {
+        url: urlTxt.value
+    });
+}
 
-var startBtn = document.getElementById("startBtn");
-var stopBtn = document.getElementById("stopBtn");
 startBtn.onclick = function () {
+    notification_utils.clearNotifications();
+    
     if (videoInfoId) {
         frameIndex = 0;
         globalFrameIndex = 0;
@@ -107,17 +132,6 @@ stopBtn.onclick = function () {
     stopAndRenderVideo();
 };
 
-
-// Prepare canvases
-var canvas = null;
-var copied_canvas = document.getElementById('2dCanvas');
-var copied_context = copied_canvas.getContext('2d');
-copied_context.font = "45px Verdana";
-copied_context.fillStyle = '#fff';
-copied_context.shadowColor = '#000';
-copied_context.shadowOffsetX = 3;
-copied_context.shadowOffsetY = 0;
-copied_context.shadowBlur = 10;
 
 function stopAndRenderVideo() {
     isRecording = false;
