@@ -2,7 +2,7 @@ var bodyParser = require('body-parser'),
     express = require('express'),
     config = require('config');
 
-var router = require('./routers'),
+var router = require('./routers'),  
     client_handler = require('./socket_client_handler.js');
 
 var PORT = config.get('app.port') || 3172;

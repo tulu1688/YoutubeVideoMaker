@@ -106,11 +106,14 @@ router.get('/videos/:videoId', function (req, res) {
 // Search videos
 router.post('/report/videos', function (req, res) {
     console.log("=========================================");
-    console.log("\tSearching videos");
+    console.log("\tSearching videos with criteria", req.body);
     var searchCriteria = {};
 
     if (req.body.status) {
         searchCriteria.status = req.body.status;
+    }
+    if (req.body.is_deleted) {
+        searchCriteria.is_deleted = req.body.is_deleted;
     }
 
     dal.searchVideos(searchCriteria, function (err, videos) {

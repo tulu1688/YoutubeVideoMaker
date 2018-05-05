@@ -1,16 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Youtube Video generator</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/datatables.min.css" />
 </head>
+
 <body>
     <div class="container">
+        <div>
+            <table id="videoList" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th style="width: 5%">STT</th>
+                        <th style="width: 25%">URL</th>
+                        <th style="width: 30%">Title</th>
+                        <th style="width: 15%">Trạng thái</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#videoList').DataTable({
+                'ajax': {
+                    'url': 'http://localhost:3172/v1.0/report/videos',
+                    'type': 'POST',
+                    'processing': true,
+                    'serverSide': true,
+                    'dataSrc': "",
+                    'data': {
+                        "is_deleted": false
+                    }
+                },
+                "columns": [{
+                    "data": "id"
+                }, {
+                    "data": "url"
+                }, {
+                    "data": "title"
+                }, {
+                    "data": "status"
+                }, {
+                    render: function(data, type, row){
+                        var actionBtns = '<a href="/videos/' + row.id + '" style="margin-right: 10px;">Xem chi tiết</a>';
+                        
+                        if (row.status == 'CAPTURED') {
+                            actionBtns += '<button>Render</button>'
+                        } else if (row.status == 'MERGE_MUSIC'){
+                            actionBtns += '<button>Ghép nhạc</button>'
+                        } else if (row.status == 'MERGE_MUSIC'){
+                            actionBtns += '<button>Upload youtube</button>'
+                        } else if (row.status == 'FETCH_FAIL') {
+                            // do nothing for now
+                        }
+                        
+                        return actionBtns;
+                    }
+                }]
+            });
+        });
+
+    </script>
 </body>
+
 </html>
