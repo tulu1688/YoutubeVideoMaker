@@ -1,6 +1,14 @@
 var html2Text = require('html-to-text'),
     cheerio = require('cheerio');
 
+function dom2Text(htmlContent) {
+    return html2Text.fromString(htmlContent, {
+        ignoreHref: true,
+        linkHrefBaseUrl: true,
+        wordwrap: 100000
+    });
+};
+
 module.exports = {
     parse: function ($, contentTag, opts) {
         var images = [];
@@ -14,7 +22,7 @@ module.exports = {
             return null;
 
         // Replace image with bound <img>
-        $('.tplCaption img').each(function () {
+        $(opts.imgTag + ' img').each(function () {
             images.push($(this).attr('src'));
         });
         $('img').remove();
@@ -37,29 +45,31 @@ module.exports = {
             $(this).replaceWith(pre);
         });
 
-        if (articleContent === null || articleContent === undefined) {
-            return null;
-        } else if (articleContent && articleContent !== null && articleContent !== undefined) {
-            var text = html2Text.fromString(articleContent.html(), {
-                ignoreHref: true,
-                linkHrefBaseUrl: true,
-                wordwrap: 100000
-            });
+        var description = null;
+        var title = null;
+        if (opts.titleTag) {
+            title = dom2Text($(opts.titleTag));
+            $(opts.titleTag).remove();
+            console.log(title);
+        }
+        if (opts.descriptionTag) {
+            description = dom2Text($(opts.descriptionTag).html())
+        }
 
-            if (!text)
-                return null;
+        var text = dom2Text(articleContent);
 
+        if (text) {
             text = text.replace(/(?:\r\n|\r|\n)/g, ' '); // Replace carrier return with space
             text = text.replace(/TnbspL/g, ' ');
 
-            if (text == 'null' || text == 'undefined') {
-                return null;
-            }
-            
             return {
                 content: text,
-                images: images
+                images: images,
+                title: title,
+                description: description
             };
+        } else {
+            return null;
         }
     }
 };

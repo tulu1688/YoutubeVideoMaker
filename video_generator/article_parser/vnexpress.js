@@ -3,7 +3,7 @@ var cheerio = require('cheerio'),
     _ = require('underscore');
 
 module.exports = {
-    parse: function(url, body) {
+    parse: function (url, body) {
         var $ = cheerio.load(body);
 
         var removeElemt = [
@@ -16,20 +16,16 @@ module.exports = {
             '.Image'
         ];
 
-        _.each(removeElemt, function(item) {
+        _.each(removeElemt, function (item) {
             $(item).remove();
         });
 
-        if (url.indexOf('vnexpress.net/photo') > -1) {
-            return common_parser.parse($, '.w670', {
-                url: url,
-                ignoreTableTag: 'tplCaption'
-            });
-        } else {
-            return common_parser.parse($, '.sidebar_1', {
-                url: url,
-                ignoreTableTag: 'tplCaption'
-            });
-        }
+        return common_parser.parse($, '.sidebar_1', {
+            url: url,
+            ignoreTableTag: 'tplCaption',
+            imgTag: '.tplCaption',
+            titleTag: '.title_news_detail',
+            descriptionTag: '.description'
+        });
     }
 };

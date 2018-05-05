@@ -41,7 +41,7 @@ module.exports = function (client) {
                     console.log("\tFinish fetch article content for [" + data.url + "] url");
                     data.status = 'success';
                     client.emit('article', data);
-                    callback(null, data.ref_id);
+                    callback(null, data);
             }
         ],
             function (err, data) {
@@ -64,8 +64,10 @@ module.exports = function (client) {
                         ref_id: err.ref_id
                     });
                 } else {
-                    dal.updateVideoInfos(data, {
-                        status: 'FETCH_SUCCESS'
+                    dal.updateVideoInfos(data.ref_id, {
+                        status: 'FETCH_SUCCESS',
+                        title: data.title,
+                        description: data.description
                     }, fectchCallback);
                 }
             }

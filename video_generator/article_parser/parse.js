@@ -64,7 +64,9 @@ var parseUrl = function (video, imgPath, callback) {
                                     ref_id: youtubeVideoInfoId,
                                     url: url,
                                     content: result.content,
-                                    images: downloadedFilePath
+                                    images: downloadedFilePath,
+                                    title: result.title,
+                                    description: result.description
                                 });
 
                             }
