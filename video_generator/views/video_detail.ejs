@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Youtube Video generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container">
+        <% if (video) { %>
+            <div class="card" style="width: 24rem;">
+                <img class="card-img-top" src="https://sguru.org/wp-content/uploads/2018/02/2000px-YouTube_Logo_2017.svg_.png" alt="Card image cap">
+                <% if (video.title) { %>
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <%= video.title %>
+                        </h5>
+                        <p class="card-text">
+                            <%= video.description %>
+                        </p>
+                    </div>
+                <% } %>
+                <ul class="list-group list-group-flush">
+                   <li class="list-group-item">Id: <%= video.id %></li>
+                   <li class="list-group-item">Trạng thái: <%= video.status %></li>
+                    <% if (video.frame_count) { %>
+                        <li class="list-group-item">Total frame: <%= video.title %></li>
+                    <% } %>
+                    <% if (video.status_message) { %>
+                        <li class="list-group-item">Lý do: <%= video.status_message %></li>
+                    <% } %>
+                    <li class="list-group-item">Ngày tạo: <%= video.created_timestamp %></li>
+                    <li class="list-group-item">Cập nhật gần nhất: <%= video.last_updated_timestamp %></li>
+                    <% if (video.is_deleted == true) { %>
+                    <li class="list-group-item"><span style="color: red">Video đã bị xoá</span></li>
+                    <% } %>
+                </ul>
+                <div class="card-body">
+                    <a href="/videos" class="card-link">Về danh sách video</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+            <% } %>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+    <script>
+
+
+    </script>
+</body>
+
+</html>
