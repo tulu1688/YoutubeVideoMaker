@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS youtube.video
 (
     id INT(11) PRIMARY KEY AUTO_INCREMENT,
     url VARCHAR(256) NOT NULL,
+    thumbnail VARCHAR(256),
     status VARCHAR(32) NOT NULL,
     status_message VARCHAR(32),
     frame_count INT(11),

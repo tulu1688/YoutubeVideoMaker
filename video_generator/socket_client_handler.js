@@ -67,7 +67,8 @@ module.exports = function (client) {
                     dal.updateVideoInfos(data.ref_id, {
                         status: 'FETCH_SUCCESS',
                         title: data.title,
-                        description: data.description
+                        description: data.description,
+                        thumbnail: data.thumbnail
                     }, fectchCallback);
                 }
             }

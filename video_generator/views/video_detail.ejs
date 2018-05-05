@@ -12,7 +12,11 @@
     <div class="container">
         <% if (video) { %>
             <div class="card" style="width: 24rem;">
-                <img class="card-img-top" src="https://sguru.org/wp-content/uploads/2018/02/2000px-YouTube_Logo_2017.svg_.png" alt="Card image cap">
+                <% if (video.thumbnail) { %>
+                    <img class="card-img-top" src="<%= video.thumbnail %>" alt="Card image cap">
+                <% } else{ %>
+                    <img class="card-img-top" src="https://sguru.org/wp-content/uploads/2018/02/2000px-YouTube_Logo_2017.svg_.png" alt="Card image cap">
+                <% } %>
                 <% if (video.title) { %>
                     <div class="card-body">
                         <h5 class="card-title">
@@ -40,7 +44,15 @@
                 </ul>
                 <div class="card-body">
                     <a href="/videos" class="card-link">Về danh sách video</a>
-                    <a href="#" class="card-link">Another link</a>
+                    <% if (video.status == 'FETCH_SUCCESS') { %>
+                        <a href="#" class="card-link">Render</a>
+                    <% } %>
+                    <% if (video.status == 'RENDERED') { %>
+                        <a href="#" class="card-link">Ghép nhạc</a>
+                    <% } %>
+                    <% if (video.status == 'MERGE_MUSIC') { %>
+                        <a href="#" class="card-link">Upload youtube</a>
+                    <% } %>
                 </div>
             </div>
             <% } %>

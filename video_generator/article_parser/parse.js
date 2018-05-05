@@ -66,7 +66,8 @@ var parseUrl = function (video, imgPath, callback) {
                                     content: result.content,
                                     images: downloadedFilePath,
                                     title: result.title,
-                                    description: result.description
+                                    description: result.description,
+                                    thumbnail: result.images[0]
                                 });
 
                             }
