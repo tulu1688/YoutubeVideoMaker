@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.json());
 app.use(express.static('images'))
+app.use(express.static('public'))
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');

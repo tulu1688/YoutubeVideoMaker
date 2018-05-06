@@ -6,76 +6,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tulu Videoshow</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-
-    <style>
-        html {
-            font-size: 12px;
-        }
-    </style>
+    <link rel="stylesheet" href="css/index.css">
 </head>
 
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="card-header">
-                Tải bài báo
-            </div>
-            <div class="card-body">
-                <div class="input-group mb-3">
-                    <input type="text" class="form-control" placeholder="url" aria-label="URL bài báo" aria-describedby="basic-addon2" id="urlTxt">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" id="fetchUrlBtn">Tải nội dung</button>
+    <% include header %>
+
+        <div class="container">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">Billing address</h4>
+
+                <div class="mb-4">
+                    <label>URL</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">@</span>
+                        </div>
+                        <input type="text" class="form-control" id="urlTxt" placeholder="đường dẫn bài báo ...">
                     </div>
                 </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Title</span>
-                    </div>
-                    <input type="text" id="titleEdt" class="form-control" aria-label="title" aria-describedby="basic-addon1">
+
+                <div class="col-md-6 offset-md-3">
+                    <button id="fetchUrlBtn" class="btn btn-primary btn-md btn-block">Tải nội dung</button>
                 </div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text" id="basic-addon1">Mô tả</span>
+
+                <hr class="mb-4">
+
+                <div class="mb-3">
+                    <label>Title</label>
+                    <div class="input-group">
+                        <input type="text" id="titleEdt" class="form-control" disabled>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" id="titleEditBtn" type="button">Sửa</button>
+                        </div>
                     </div>
-                    <input type="text" id="descriptionEdt" class="form-control" aria-label="description" aria-describedby="basic-addon1">
                 </div>
-                <div class="input-group">
+
+                <div class="mb-3">
+                    <label>Mô tả</label>
+                    <div class="input-group">
+                        <input type="text" id="descriptionEdt" class="form-control" disabled>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" id="descriptionEditBtn" type="button">Sửa</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Nội dung</label>
                     <textarea class="form-control" style="min-height: 300px;" id="articleContentEditText"></textarea>
                 </div>
-            </div>
-        </div>
 
-        <div class="card">
-            <div class="card-header">
-                ...
-            </div>
-            <div class="card-body">
-
-                <div class="btn-group" role="group" aria-label="Basic example">
-                    <button type="button" id="startBtn" class="btn btn-secondary">Start</button>
-                    <button type="button" id="stopBtn" class="btn btn-secondary">Stop</button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="startBtn" class="btn btn-primary btn-md btn-block">Start capture</button>
+                    </div>
+                    <div class="col-md-6">
+                        <button id="stopBtn" class="btn btn-primary btn-md btn-block">Stop capture</button>
+                    </div>
                 </div>
+
             </div>
+
+            <div id="notification-container">
+            </div>
+
+            <hr class="mb-4">
         </div>
 
-        <div id="notification-container">
+        <div align="center">
+            <canvas id="2dCanvas" width="1280" height="720" style="border: 1px solid black;"></canvas>
+        </div>
+        <!-- Dummy diaporama container -->
+        <div id="diaporamaContainer" style="display: none">
+            <div id="diaporama"></div>
         </div>
 
-        <nav id="slideshows">
-        </nav>
-    </div>
+        <div class="container">
+            <% include footer %>
+        </div>
 
-    <div align="center">
-        <canvas id="2dCanvas" width="1280" height="720"></canvas>
-    </div>
-    <!-- Dummy diaporama container -->
-    <div id="diaporamaContainer" style="display: none">
-        <div id="diaporama"></div>
-    </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-    <script src="bundle.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+        <script src="bundle.js"></script>
 </body>
 
 </html>
