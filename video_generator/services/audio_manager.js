@@ -90,7 +90,6 @@ AudioManager.prototype.getAudioTrack = function (frameNo, callback) {
                     fs.writeFileSync(self.audioDir + '/' + tmpTxtFileName, tmpFileContent, 'utf8');
 
                     // Merge multiple mp3 file
-                    // ffmpeg -f concat -safe 0 -i myList.txt -c copy test.mp3
                     var ffmpeg = cp.spawn('ffmpeg', [
                         '-f', 'concat',
                         '-safe', '0',
