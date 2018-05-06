@@ -3,7 +3,6 @@ var GlslTransitions = require("glsl-transitions");
 var beautify = require("json-beautify");
 var dateFormat = require('dateformat');
 var socket = require('socket.io-client')('http://localhost:3172');
-var cheerio = require('cheerio');
 
 var cvg = require('./cvg.js'),
     text_utils = require('./text_utils.js'),
@@ -149,9 +148,7 @@ stopBtn.onclick = function () {
 
 function stopAndRenderVideo() {
     isRecording = false;
-    cvg.render('' + videoInfoId);
     copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
-
     resetDiaporama();
 }
 

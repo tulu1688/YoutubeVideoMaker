@@ -20,21 +20,6 @@ CVG.prototype.addFrame = function (canvas, videoInfoId, frameId) {
     });
 }
 
-CVG.prototype.render = function (filename) {
-    self = this;
-    self.filename = filename || 'untitled';
-
-    ajax({
-        url: self.VIDEO_GENERATOR_URL + '/render',
-        method: 'post',
-        parameters: {
-            filename: self.filename
-        }
-    }).error(function (err) {
-        console.warn(err);
-    });
-}
-
 CVG.prototype.notifyFinishCapture = function(videoInfoId, totalFrames){
     self = this;
 

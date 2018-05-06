@@ -26,7 +26,7 @@ cvg = (function() {
       url: AUTHORITY + '/render',
       method: 'post',
       parameters: {
-        filename: filename
+        video_id: filename
       }
     }).error(function(err) {
       console.warn(err);
