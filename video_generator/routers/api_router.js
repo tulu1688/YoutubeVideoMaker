@@ -10,6 +10,7 @@ var dal = require('../dal.js');
 
 var preRenderDir = config.get('path.imagePath.preRender');
 var videoDir = config.get('path.videoPath');
+var audioDir = config.get('path.audioPath');
 
 dal.connectDb(
     config.get('dbConfig.host'),
@@ -34,7 +35,9 @@ router.post('/add-frame', function (req, res) {
 
 router.post('/render', function (req, res) {
     var videoId = req.body.video_id;
-
+    console.log("=========================================");
+    console.log("\tFinish capturing images for [" + videoId + "] videoId");
+    
     if (videoId) {
         var imgDir = sprintf('%s/%s', preRenderDir, videoId);
         var fullFilePath = sprintf('%s/%s.mp4', videoDir, videoId);

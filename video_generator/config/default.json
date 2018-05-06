@@ -15,6 +15,7 @@
             "download": "/Users/tranngockhai/TuluProjects/YoutubeVideoMaker/slideshow_player/images",
             "preRender": "/Users/tranngockhai/tmp/youtube/images"
         },
-        "videoPath": "/Users/tranngockhai/tmp/youtube/videos"
+        "videoPath": "/Users/tranngockhai/tmp/youtube/videos",
+        "audioPath": "/Users/tranngockhai/tmp/youtube/audios"
     }
 }
