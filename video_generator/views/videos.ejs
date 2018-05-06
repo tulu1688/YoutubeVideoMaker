@@ -5,89 +5,106 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Youtube Video generator</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/datatables.min.css" />
     
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css" />
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/r/bs-3.3.5/jqc-1.11.3,dt-1.10.8/datatables.min.js"></script>
+    
+    <style>
+.pagination {
+    display: inline-block;
+    padding-left: 0;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+        
+div.dataTables_wrapper div.dataTables_paginate ul.pagination {
+    margin: 2px 0;
+    white-space: nowrap;
+}
+    </style>
 </head>
 
 <body>
     <% include header%>
 
-    <div class="container">
-        <div>
-            <table id="videoList" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th style="width: 5%">STT</th>
-                        <th style="width: 25%">URL</th>
-                        <th style="width: 30%">Title</th>
-                        <th style="width: 15%">Trạng thái</th>
-                        <th></th>
-                    </tr>
-                </thead>
-            </table>
+        <div class="container">
+            <div>
+                <table id="videoList" class="display table table-striped table-bordered dataTable no-footer" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 25%">URL</th>
+                            <th style="width: 30%">Title</th>
+                            <th style="width: 15%">Trạng thái</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <% include footer%>
         </div>
-        
-        <% include footer%>
-    </div>
 
-    <script>
-        var triggerRender = function(videoId) {
-            $.ajax({
-                method: "POST",
-                url: "/v1.0/render",
-                data: {
-                    video_id: videoId
-                }
-            }).done(function(msg) {
-                location.reload();
-            });
-        }
-
-        $(document).ready(function() {
-            $('#videoList').DataTable({
-                'ajax': {
-                    'url': '/v1.0/report/videos',
-                    'type': 'POST',
-                    'processing': true,
-                    'serverSide': true,
-                    'dataSrc': "",
-                    'data': {
-                        "is_deleted": false
+        <script>
+            var triggerRender = function(videoId) {
+                $.ajax({
+                    method: "POST",
+                    url: "/v1.0/render",
+                    data: {
+                        video_id: videoId
                     }
-                },
-                "columns": [{
-                    "data": "id"
-                }, {
-                    "data": "url"
-                }, {
-                    "data": "title"
-                }, {
-                    "data": "status"
-                }, {
-                    render: function(data, type, row) {
-                        var actionBtns = '<a href="/videos/' + row.id + '" style="margin-right: 10px;">Xem chi tiết</a>';
+                }).done(function(msg) {
+                    location.reload();
+                });
+            }
 
-                        if (row.status == 'CAPTURED') {
-                            actionBtns += '<button onclick=triggerRender(' + row.id + ')>Render</button>'
-                        } else if (row.status == 'RENDERED') {
-                            actionBtns += '<button>Ghép nhạc</button>'
-                        } else if (row.status == 'MERGE_MUSIC') {
-                            actionBtns += '<button>Upload youtube</button>'
-                        } else if (row.status == 'FETCH_FAIL') {
-                            // do nothing for now
+            $(document).ready(function() {
+                $('#videoList').DataTable({
+                    'bLengthChange': false,
+                    'bFilter': false,
+                    'ajax': {
+                        'url': '/v1.0/report/videos',
+                        'type': 'POST',
+                        'processing': true,
+                        'serverSide': true,
+                        'dataSrc': "",
+                        'data': {
+                            "is_deleted": false
                         }
+                    },
+                    "columns": [{
+                        "data": "id"
+                    }, {
+                        "data": "url"
+                    }, {
+                        "data": "title"
+                    }, {
+                        "data": "status"
+                    }, {
+                        render: function(data, type, row) {
+                            var actionBtns = '<a href="/videos/' + row.id + '" style="margin-right: 10px;">Xem chi tiết</a>';
 
-                        return actionBtns;
-                    }
-                }]
+                            if (row.status == 'CAPTURED') {
+                                actionBtns += '<button onclick=triggerRender(' + row.id + ')>Render</button>'
+                            } else if (row.status == 'RENDERED') {
+                                actionBtns += '<button>Ghép nhạc</button>'
+                            } else if (row.status == 'MERGE_MUSIC') {
+                                actionBtns += '<button>Upload youtube</button>'
+                            } else if (row.status == 'FETCH_FAIL') {
+                                // do nothing for now
+                            }
+
+                            return actionBtns;
+                        }
+                    }]
+                });
             });
-        });
 
-    </script>
+        </script>
 </body>
 
 </html>
