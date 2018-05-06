@@ -4,6 +4,7 @@ var express = require('express'),
     fs = require('fs'),
     fs_extra = require('fs-extra'),
     cp = require('child_process'),
+    async = require('async'),
     router = express.Router();
 
 var dal = require('../dal.js'),
@@ -36,12 +37,11 @@ router.post('/add-frame', function (req, res) {
     process.stdout.write(sprintf('Recieved frame %s\r', req.body.frame));
 });
 
-
 router.post('/render', function (req, res) {
     var videoId = req.body.video_id;
     console.log("=========================================");
     console.log("\tFinish capturing images for [" + videoId + "] videoId");
-    
+
     if (videoId) {
         var imgDir = sprintf('%s/%s', preRenderDir, videoId);
         var fullFilePath = sprintf('%s/%s.mp4', videoDir, videoId);
@@ -78,7 +78,7 @@ router.post('/render', function (req, res) {
                     console.log(data);
                 }
             );
-            
+
             res.end();
         });
     } else {
@@ -103,6 +103,66 @@ router.post('/notification/finish-capturing', function (req, res) {
     );
 
     res.end();
+});
+
+
+router.post('/merge-audio', function (req, res) {
+    var videoId = req.body.video_id;
+    console.log("=========================================");
+    console.log("\tStart merge audio for [" + videoId + "] videoId");
+
+    async.waterfall([
+            function (callback) {
+                console.log("\tGet detail info for [" + videoId + "] videoId");
+                dal.searchVideos({
+                    id: videoId
+                }, callback);
+            },
+            function (videos, callback) {
+                console.log("\tGet audio track");
+                var video = videos.shift();
+                audioManager.getAudioTrack(video.frame_count, callback);
+            },
+            function (audioPath, callback) {
+                console.log("\tStart merge audio. It might take some time");
+
+                var finalVideoPath = '' + videoId + '_final.mp4';
+                var ffmpeg = cp.spawn('ffmpeg', [
+                    '-i', videoId + '.mp4',
+                    '-i', audioPath,
+                    '-codec', 'copy',
+                    '-shortest',
+                    finalVideoPath
+                ], {
+                    cwd: videoDir,
+                    stdio: 'inherit'
+                });
+
+                ffmpeg.on('close', function (code) {
+                    console.log(sprintf('Finished merge soundtrack. You can find it at %s', finalVideoPath));
+
+                    dal.updateVideoInfos(
+                        videoId, {
+                            status: 'MERGE_MUSIC'
+                        },
+                        function (err, data) {
+                            if (err) console.error(error);
+                            if (data) console.log(data);
+                        }
+                    );
+
+                    callback(null, code);
+                });
+            }
+        ],
+        function (err, data) {
+            if (err) {
+                
+            } else {
+                res.end();
+            }
+        }
+    );
 });
 
 
