@@ -25,6 +25,7 @@ app.use(bodyParser.urlencoded({
     limit: '100mb'
 }));
 app.use(express.json());
+app.use(express.static('images'))
 
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');

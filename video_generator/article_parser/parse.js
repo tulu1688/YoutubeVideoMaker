@@ -49,7 +49,7 @@ var parseUrl = function (video, imgPath, callback) {
                                     filename,
                                     image
                                 }) => {
-                                    downloadedFilePath.push('images/' + getFileName(filename));
+                                    downloadedFilePath.push(getFileName(filename));
                                     downloadImgCallback();
                                 }).catch((err) => {
                                     downloadImgCallback(err);

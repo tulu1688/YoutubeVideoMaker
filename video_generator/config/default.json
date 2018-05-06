@@ -12,7 +12,7 @@
     },
     "path": {
         "imagePath": {
-            "download": "/Users/tranngockhai/TuluProjects/YoutubeVideoMaker/slideshow_player/images",
+            "download": "/Users/tranngockhai/TuluProjects/YoutubeVideoMaker/video_generator/images",
             "preRender": "/Users/tranngockhai/tmp/youtube/images"
         },
         "videoPath": "/Users/tranngockhai/tmp/youtube/videos",
