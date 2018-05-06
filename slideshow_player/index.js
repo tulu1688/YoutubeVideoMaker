@@ -35,7 +35,8 @@ var isRecording = false;
 var subtitle = '';
 var frameIndex = 0;
 var globalFrameIndex = 0;
-var resetIndex = 24; // 1 sec without subtitle
+var resetIndex = 48; // 2 sec without subtitle
+var isSubtitlePlayed = false;
 
 // Canvases and diaporama
 var diaporama = null;
@@ -125,6 +126,7 @@ startBtn.onclick = function () {
     if (videoInfoId && slides) {
         frameIndex = 0;
         globalFrameIndex = 0;
+        isSubtitlePlayed = false;
 
         diaporama = setupDiaporama();
         diaporama.data = slides;
@@ -168,10 +170,17 @@ function renderVideo() {
                 resetIndex = printInfos.no_of_frames;
                 frameIndex = 0;
             } else {
-                notification_utils.showNotification("Quá trình tạo ảnh cho video kết thúc", "alert-success", "notification-container");
+                if (!isSubtitlePlayed) {
+                    resetIndex = 48; // Wait more 2 sec
+                    isSubtitlePlayed = true;
+                } else {
+                    isSubtitlePlayed = false;
+                    
+                    notification_utils.showNotification("Quá trình tạo ảnh cho video kết thúc", "alert-success", "notification-container");
 
-                cvg.notifyFinishCapture(videoInfoId, globalFrameIndex);
-                stopAndRenderVideo();
+                    cvg.notifyFinishCapture(videoInfoId, globalFrameIndex);
+                    stopAndRenderVideo();
+                }
             }
         }
 
