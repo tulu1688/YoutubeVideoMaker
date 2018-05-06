@@ -21,6 +21,8 @@ var fetchUrlBtn = document.getElementById("fetchUrlBtn");
 var startBtn = document.getElementById("startBtn");
 var stopBtn = document.getElementById("stopBtn");
 var urlTxt = document.getElementById("urlTxt");
+var titleEdt = document.getElementById("titleEdt");
+var descriptionEdt = document.getElementById("descriptionEdt");
 var articleContentEditText = document.getElementById("articleContentEditText");
 
 // Article related vars
@@ -70,8 +72,12 @@ socket.on('article', function (data) {
 
         videoInfoId = data.ref_id;
         articleContentEditText.value = data.content;
+        descriptionEdt.value = data.description;
+        titleEdt.value = data.title;
     } else if (data.status == 'fail') {
         articleContentEditText.value = '';
+        descriptionEdt.value = '';
+        titleEdt.value = '';
     }
 });
 socket.on('disconnect', function () {});

@@ -13,7 +13,8 @@ module.exports = {
             '.wrap_xemthem',
             '.title_box',
             '.list_news_quantam',
-            '.Image'
+            '.Image',
+            '.txt_feedback'
         ];
 
         _.each(removeElemt, function (item) {

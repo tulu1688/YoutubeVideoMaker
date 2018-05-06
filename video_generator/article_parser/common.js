@@ -5,7 +5,12 @@ function dom2Text(htmlContent) {
     return html2Text.fromString(htmlContent, {
         ignoreHref: true,
         linkHrefBaseUrl: true,
-        wordwrap: 100000
+        wordwrap: 100000,
+        format: {
+            heading: function (elem, fn, options) {
+                return fn(elem.children, options);
+            }
+        }
     });
 };
 
