@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon index.js & http-server -c-1"
   },
-  "author": "Rye Terrell <wwwtyro@gmail.com> (http://wwwtyro.github.io)",
+  "author": "Kai.Tran <ngockhai.tulu@gmail.com> (https://github.com/tulu1688)",
   "license": "Unlicense",
   "dependencies": {
     "body-parser": "^1.15.2",
