@@ -1,21 +1,23 @@
 var fs = require('fs'),
     async = require('async'),
+    _ = require('underscore'),
+    cp = require('child_process'),
     mp3Duration = require('mp3-duration');
 
 AudioManager = function () {
     this.tracks = [];
-    this.audoDir = null;
+    this.audioDir = null;
 };
 
 AudioManager.prototype.init = function (audioPath) {
     var self = this;
-    self.audoDir = audioPath;
-    
+    self.audioDir = audioPath;
+
     var audioDurationRetriever = function (err) {
         if (err)
             console.error("Retriever mp3 info fail", err);
     };
-    
+
     console.log("=========================================");
     console.log("\tLoading audio tracks in [" + audioPath + "] folder");
     fs.readdirSync(audioPath).forEach(file => {
@@ -47,13 +49,80 @@ AudioManager.prototype.init = function (audioPath) {
     );
 }
 
-AudioManager.prototype.getAudioTrack = function(frameNo, callback){
+AudioManager.prototype.getAudioTrack = function (frameNo, callback) {
+    var self = this;
     var tracks = this.tracks.slice(0);
     tracks.sort(() => Math.random() - 0.5);
-    
-    // TODO find suitable track with length
-    // If no track sutable => merge audio
-    callback(null, this.audoDir + '/' + tracks[0].path);
+
+    async.waterfall([
+            function (callback) {
+                var total_duration = 0;
+                var videoDuration = frameNo / 24;
+                // var videoDuration = 500;
+                var fileList = [];
+                var index = 0;
+
+                while (videoDuration > total_duration) {
+                    total_duration += tracks[index].duration;
+                    fileList.push(tracks[index].path);
+
+                    index++;
+                    if (index == tracks.length)
+                        index = 0;
+                }
+
+                callback(null, fileList);
+            },
+            function (fileList, callback) {
+                if (fileList.length == 1) {
+                    callback(null, {
+                        fileName: fileList.shift()
+                    });
+                } else {
+                    var now = (new Date()).getTime();
+                    var tmpMp3FileName = '' + now + '.mp3';
+                    var tmpTxtFileName = '' + now + '.txt';
+
+                    var tmpFileContent = '';
+                    _.each(fileList, function (file) {
+                        tmpFileContent += "file '" + file + "'\n";
+                    });
+                    fs.writeFileSync(self.audioDir + '/' + tmpTxtFileName, tmpFileContent, 'utf8');
+
+                    // Merge multiple mp3 file
+                    // ffmpeg -f concat -safe 0 -i myList.txt -c copy test.mp3
+                    var ffmpeg = cp.spawn('ffmpeg', [
+                        '-f', 'concat',
+                        '-safe', '0',
+                        '-i', tmpTxtFileName,
+                        '-c', 'copy',
+                        tmpMp3FileName
+                    ], {
+                        cwd: self.audioDir,
+                        stdio: 'inherit'
+                    });
+
+                    ffmpeg.on('close', function (code) {
+                        fs.unlinkSync(self.audioDir + '/' + tmpTxtFileName);
+                        
+                        callback(null, {
+                            fileName: tmpMp3FileName,
+                            tmpFile: self.audioDir + '/' + tmpMp3FileName
+                        });
+                    });
+                }
+            }
+        ],
+        function (err, data) {
+            if (err) {} else {
+                callback(null, {
+                    fileName: self.audioDir + '/' + data.fileName,
+                    tmpFile: data.tmpFile
+                });
+            }
+        }
+    );
+
 }
 
 module.exports = new AudioManager();

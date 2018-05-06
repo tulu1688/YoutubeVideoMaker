@@ -123,13 +123,13 @@ router.post('/merge-audio', function (req, res) {
                 var video = videos.shift();
                 audioManager.getAudioTrack(video.frame_count, callback);
             },
-            function (audioPath, callback) {
+            function (audioTrackInfo, callback) {
                 console.log("\tStart merge audio. It might take some time");
 
                 var finalVideoPath = '' + videoId + '_final.mp4';
                 var ffmpeg = cp.spawn('ffmpeg', [
                     '-i', videoId + '.mp4',
-                    '-i', audioPath,
+                    '-i', audioTrackInfo.fileName,
                     '-codec', 'copy',
                     '-shortest',
                     finalVideoPath
@@ -140,6 +140,10 @@ router.post('/merge-audio', function (req, res) {
 
                 ffmpeg.on('close', function (code) {
                     console.log(sprintf('Finished merge soundtrack. You can find it at %s', finalVideoPath));
+                    
+                    // Clean up tmp file if exist
+                    if (audioTrackInfo.tmpFile)
+                        fs.unlinkSync(audioTrackInfo.tmpFile);
 
                     dal.updateVideoInfos(
                         videoId, {
