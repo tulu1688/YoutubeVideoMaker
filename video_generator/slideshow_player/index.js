@@ -40,6 +40,7 @@ var isSubtitlePlayed = false;
 // Canvases and diaporama
 var diaporama = null;
 var canvas = null;
+var canvasContainer = document.getElementById('canvasContainer');
 var copied_canvas = document.getElementById('2dCanvas');
 var copied_context = copied_canvas.getContext('2d');
 copied_context.font = "45px Verdana";
@@ -123,6 +124,8 @@ startBtn.onclick = function () {
     notification_utils.clearNotifications();
 
     if (videoInfoId && slides) {
+        canvasContainer.style.display = "block";
+        
         frameIndex = 0;
         globalFrameIndex = 0;
         isSubtitlePlayed = false;
@@ -147,6 +150,8 @@ stopBtn.onclick = function () {
 
 
 function stopAndRenderVideo() {
+    canvasContainer.style.display = "none";
+    
     isRecording = false;
     copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
     resetDiaporama();

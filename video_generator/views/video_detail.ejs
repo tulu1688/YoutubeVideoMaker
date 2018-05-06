@@ -5,7 +5,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Youtube Video generator</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/index.css">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -13,59 +18,67 @@
     
     <div class="container">
         <% if (video) { %>
-            <div class="card" style="width: 24rem;">
-                <div class="card-body">
-                    <a href="/videos" class="card-link">Về danh sách video</a>
-                    <% if (video.status == 'CAPTURED') { %>
-                        <a href="javascript:triggerRender(<%= video.id %>)" class="card-link">Render</a>
+            <div class="col-md-10 offset-md-1">
+                <div class="card flex-md-row box-shadow h-md-250">
+                    <% if (video.thumbnail) { %>
+                        <img class="card-img-left flex-auto d-none d-lg-block" data-src="holder.js/200x250?theme=thumb" src="<%= video.thumbnail %>" style="width: 400px; height: 250px;" data-holder-rendered="true">
+                    <% } else{ %>
+                        <img class="card-img-left flex-auto d-none d-lg-block" data-src="holder.js/200x250?theme=thumb" style="width: 400px; height: 250px;" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22250%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20200%20250%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_163362effff%20text%20%7B%20fill%3A%23eceeef%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A13pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_163362effff%22%3E%3Crect%20width%3D%22200%22%20height%3D%22250%22%20fill%3D%22%2355595c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2256.203125%22%20y%3D%22131%22%3EThumbnail%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true">
                     <% } %>
-                    <% if (video.status == 'RENDERED') { %>
-                        <a href="#" class="card-link">Ghép nhạc</a>
-                    <% } %>
-                    <% if (video.status == 'MERGE_MUSIC') { %>
-                        <a href="#" class="card-link">Upload youtube</a>
-                    <% } %>
-                </div>
-                
-                <% if (video.thumbnail) { %>
-                    <img class="card-img-top" src="<%= video.thumbnail %>" alt="Card image cap">
-                <% } else{ %>
-                    <img class="card-img-top" src="https://sguru.org/wp-content/uploads/2018/02/2000px-YouTube_Logo_2017.svg_.png" alt="Card image cap">
-                <% } %>
-                <% if (video.title) { %>
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <%= video.title %>
-                        </h5>
-                        <p class="card-text">
-                            <%= video.description %>
-                        </p>
+
+                    <div class="card-body d-flex flex-column align-items-start">
+                        <% if (video.title) { %>
+                            <h5 class="mb-0">
+                                <p><%= video.title %></p>
+                            </h5>
+                            <div class="mb-1 text-muted">&nbsp;</div>
+                            <p class="card-text mb-auto"><%= video.description %></p>
+                        <% } %>
                     </div>
-                <% } %>
-                <ul class="list-group list-group-flush">
-                   <li class="list-group-item">Id: <%= video.id %></li>
-                   <li class="list-group-item">Trạng thái: <%= video.status %></li>
-                    <% if (video.frame_count) { %>
-                        <li class="list-group-item">Total frame: <%= video.title %></li>
-                    <% } %>
-                    <% if (video.status_message) { %>
-                        <li class="list-group-item">Lý do: <%= video.status_message %></li>
-                    <% } %>
-                    <li class="list-group-item">Ngày tạo: <%= video.created_timestamp %></li>
-                    <li class="list-group-item">Cập nhật gần nhất: <%= video.last_updated_timestamp %></li>
-                    <% if (video.is_deleted == true) { %>
-                    <li class="list-group-item"><span style="color: red">Video đã bị xoá</span></li>
-                    <% } %>
-                </ul>
+                </div>
             </div>
-            <% } %>
+
+            <div class="col-md-10 offset-md-1 mb-4">
+                <div class="card flex-md-row box-shadow h-md-250">
+                    <ul class="list-group list-group-flush">
+                       <li class="list-group-item">Video id: <%= video.id %></li>
+                       <li class="list-group-item">Trạng thái: <%= video.status %></li>
+                        <% if (video.frame_count) { %>
+                            <li class="list-group-item">Total frame: <%= video.title %></li>
+                        <% } %>
+                        <% if (video.status_message) { %>
+                            <li class="list-group-item">Lý do: <%= video.status_message %></li>
+                        <% } %>
+                        <li class="list-group-item">Ngày tạo: <%= video.created_timestamp %></li>
+                        <li class="list-group-item">Cập nhật gần nhất: <%= video.last_updated_timestamp %></li>
+                        <% if (video.is_deleted == true) { %>
+                        <li class="list-group-item"><span style="color: red">Video đã bị xoá</span></li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        <% } %>
         
+        <div class="row" align="center">
+            <% if (video.status == 'CAPTURED') { %>
+                <div class="col-md-6 offset-md-3">
+                    <button id="startBtn" class="btn btn-primary btn-md btn-block" onclick="triggerRender(<%= video.id %>)">Render</button>
+                </div>
+            <% } %>
+            <% if (video.status == 'RENDERED') { %>
+                <div class="col-md-6 offset-md-3">
+                    <button id="startBtn" class="btn btn-primary btn-md btn-block" onclick="triggerMergeAudio(<%= video.id %>)">Ghép nhạc</button>
+                </div>
+            <% } %>
+            <% if (video.status == 'MERGE_MUSIC') { %>
+                <div class="col-md-6 offset-md-3">
+                    <button id="startBtn" class="btn btn-primary btn-md btn-block" onclick="triggerUpload(<%= video.id %>)">Upload youtube</button>
+                </div>
+            <% } %>
+        </div>
+                    
         <% include footer%>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>    
     
     <script>
         var triggerRender = function(videoId) {
