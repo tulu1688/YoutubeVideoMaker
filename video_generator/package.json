@@ -25,7 +25,8 @@
     "async": "^2.6.0",
     "sql-bricks": "^2.0.3",
     "fs-extra": "^6.0.0",
-    "ejs": "^2.5.9"
+    "ejs": "^2.5.9",
+    "mp3-duration": "^1.1.0"
   },
   "devDependencies": {
     "nodemon": "^1.9.1"
