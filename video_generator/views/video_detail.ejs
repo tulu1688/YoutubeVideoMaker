@@ -44,7 +44,7 @@
                        <li class="list-group-item">Video id: <%= video.id %></li>
                        <li class="list-group-item">Trạng thái: <%= video.status %></li>
                         <% if (video.frame_count) { %>
-                            <li class="list-group-item">Total frame: <%= video.title %></li>
+                            <li class="list-group-item">Total frame: <%= video.frame_count %> frames</li>
                         <% } %>
                         <% if (video.status_message) { %>
                             <li class="list-group-item">Lý do: <%= video.status_message %></li>
@@ -81,6 +81,18 @@
     </div>
     
     <script>
+        var triggerMergeAudio = function(videoId){
+            $.ajax({
+                method: "POST",
+                url: "/v1.0/merge-audio",
+                data: {
+                    video_id: videoId
+                }
+            }).done(function(msg) {
+                location.reload();
+            });
+        }
+        
         var triggerRender = function(videoId) {
             $.ajax({
                 method: "POST",

@@ -8,6 +8,7 @@
     
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/index.css"/>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
@@ -26,7 +27,7 @@
                             <th style="width: 25%">URL</th>
                             <th style="width: 30%">Title</th>
                             <th style="width: 15%">Trạng thái</th>
-                            <th></th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                 </table>
@@ -40,6 +41,18 @@
                 $.ajax({
                     method: "POST",
                     url: "/v1.0/render",
+                    data: {
+                        video_id: videoId
+                    }
+                }).done(function(msg) {
+                    location.reload();
+                });
+            }
+            
+            var triggerMergeAudio = function(videoId){
+                $.ajax({
+                    method: "POST",
+                    url: "/v1.0/merge-audio",
                     data: {
                         video_id: videoId
                     }
@@ -72,14 +85,16 @@
                         "data": "status"
                     }, {
                         render: function(data, type, row) {
-                            var actionBtns = '<a href="/videos/' + row.id + '" style="margin-right: 10px;">Xem chi tiết</a>';
+                            var actionBtns = '<a class="btn btn-outline-primary" href="/videos/' + row.id + '" style="margin-right: 10px;">Xem chi tiết</a>';
 
                             if (row.status == 'CAPTURED') {
-                                actionBtns += '<button onclick=triggerRender(' + row.id + ')>Render</button>'
+                                actionBtns += '<a class="btn btn-outline-primary" href="javascript:triggerRender(' + row.id + ')" style="margin-right: 10px;">Render</a>'
+//                                actionBtns += '<button onclick=triggerRender(' + row.id + ')>Render</button>'
                             } else if (row.status == 'RENDERED') {
-                                actionBtns += '<button>Ghép nhạc</button>'
+                                actionBtns += '<a class="btn btn-outline-primary" href="javascript:triggerMergeAudio(' + row.id + ')" style="margin-right: 10px;">Ghép nhạc</a>'
                             } else if (row.status == 'MERGE_MUSIC') {
-                                actionBtns += '<button>Upload youtube</button>'
+                                actionBtns += '<a class="btn btn-outline-primary" href="javascript:triggerUpload(' + row.id + ')" style="margin-right: 10px;">Upload youtube</a>'
+//                                actionBtns += '<button>Upload youtube</button>'
                             } else if (row.status == 'FETCH_FAIL') {
                                 // do nothing for now
                             }
