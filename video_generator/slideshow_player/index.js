@@ -72,13 +72,19 @@ socket.on('article', function (data) {
         }
 
         videoInfoId = data.ref_id;
+        
         articleContentEditText.value = data.content;
         descriptionEdt.value = data.description;
         titleEdt.value = data.title;
+        
+        startBtn.removeAttribute("disabled");
     } else if (data.status == 'fail') {
         articleContentEditText.value = '';
         descriptionEdt.value = '';
         titleEdt.value = '';
+        
+        startBtn.setAttribute("disabled","true");
+        stopBtn.setAttribute("disabled","true");
     }
 });
 socket.on('disconnect', function () {});
@@ -125,10 +131,14 @@ startBtn.onclick = function () {
 
     if (videoInfoId && slides) {
         canvasContainer.style.display = "block";
+        fetchUrlBtn.setAttribute("disabled","true");
+        stopBtn.removeAttribute("disabled");
+        startBtn.setAttribute("disabled","true");
         
         frameIndex = 0;
         globalFrameIndex = 0;
         isSubtitlePlayed = false;
+        resetIndex = 48;
 
         diaporama = setupDiaporama();
         diaporama.data = slides;
@@ -145,14 +155,17 @@ startBtn.onclick = function () {
 };
 
 stopBtn.onclick = function () {
+    cvg.notifyFinishCapture(videoInfoId, globalFrameIndex);
     stopAndRenderVideo();
 };
 
 
 function stopAndRenderVideo() {
     canvasContainer.style.display = "none";
-    
-    isRecording = false;
+    fetchUrlBtn.removeAttribute("disabled");
+    stopBtn.setAttribute("disabled","true");
+    startBtn.setAttribute("disabled","true");
+        
     copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
     resetDiaporama();
 }
@@ -176,8 +189,6 @@ function renderVideo() {
                     resetIndex = 48; // Wait more 2 sec
                     isSubtitlePlayed = true;
                 } else {
-                    isSubtitlePlayed = false;
-                    
                     notification_utils.showNotification("Quá trình tạo ảnh cho video kết thúc", "alert-success", "notification-container");
 
                     cvg.notifyFinishCapture(videoInfoId, globalFrameIndex);
