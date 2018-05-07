@@ -215,4 +215,25 @@ router.post('/report/videos', function (req, res) {
     });
 });
 
+// Report videos
+router.post('/report', function(req, res){
+    console.log("=========================================");
+    var videoId = req.body.video_id;
+    console.log("\tMark [" + videoId + "] videoId as REPORTED");
+
+    dal.updateVideoInfos(videoId, {
+        status: 'REPORTED',
+        status_message: null
+    }, function (err, videos) {
+        if (err) {
+            res.statusCode = 500;
+            console.error("ERROR", err);
+            res.send("{error: 'Internal server error'}");
+        } else {
+            console.error("\tDONE");
+            res.send("{success: 'Success'}");
+        }
+    }); 
+});
+
 module.exports = router;

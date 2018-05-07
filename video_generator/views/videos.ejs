@@ -5,10 +5,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Youtube Video generator</title>
-    
+
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/r/bs-3.3.5/jq-2.1.4,dt-1.10.8/datatables.min.css" />
-    <link rel="stylesheet" type="text/css" href="/css/index.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/index.css" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
@@ -48,8 +48,8 @@
                     location.reload();
                 });
             }
-            
-            var triggerMergeAudio = function(videoId){
+
+            var triggerMergeAudio = function(videoId) {
                 $.ajax({
                     method: "POST",
                     url: "/v1.0/merge-audio",
@@ -60,6 +60,18 @@
                     location.reload();
                 });
             }
+
+            var reportError = function(videoId) {
+                $.ajax({
+                    method: "POST",
+                    url: "/v1.0/report",
+                    data: {
+                        video_id: videoId
+                    }
+                }).done(function(msg) {
+                    location.reload();
+                });
+            };
 
             $(document).ready(function() {
                 $('#videoList').DataTable({
@@ -85,16 +97,18 @@
                         "data": "status"
                     }, {
                         render: function(data, type, row) {
-                            var actionBtns = '<a class="btn btn-outline-primary" href="/videos/' + row.id + '" style="margin-right: 10px;">Xem chi tiết</a>';
+                            var actionBtns = '<div><a class="btn btn-outline-primary" href="/videos/' + row.id + '" style="margin-right: 10px;">Xem chi tiết</a></div>';
+                            
+                            if (row.status != 'REPORTED') {
+                                actionBtns += '<div><a class="btn btn-outline-danger" href="javascript:reportError(' + row.id + ')" style="margin-right: 10px;">Báo lỗi</a></div>';
+                            }
 
                             if (row.status == 'CAPTURED') {
-                                actionBtns += '<a class="btn btn-outline-primary" href="javascript:triggerRender(' + row.id + ')" style="margin-right: 10px;">Render</a>'
-//                                actionBtns += '<button onclick=triggerRender(' + row.id + ')>Render</button>'
+                                actionBtns += '<div><a class="btn btn-outline-primary" href="javascript:triggerRender(' + row.id + ')" style="margin-right: 10px;">Render</a></div>'
                             } else if (row.status == 'RENDERED') {
-                                actionBtns += '<a class="btn btn-outline-primary" href="javascript:triggerMergeAudio(' + row.id + ')" style="margin-right: 10px;">Ghép nhạc</a>'
+                                actionBtns += '<div><a class="btn btn-outline-primary" href="javascript:triggerMergeAudio(' + row.id + ')" style="margin-right: 10px;">Ghép nhạc</a></div>'
                             } else if (row.status == 'MERGE_MUSIC') {
-                                actionBtns += '<a class="btn btn-outline-primary" href="javascript:triggerUpload(' + row.id + ')" style="margin-right: 10px;">Upload youtube</a>'
-//                                actionBtns += '<button>Upload youtube</button>'
+                                actionBtns += '<div><a class="btn btn-outline-primary" href="javascript:triggerUpload(' + row.id + ')" style="margin-right: 10px;">Upload youtube</a></div>'
                             } else if (row.status == 'FETCH_FAIL') {
                                 // do nothing for now
                             }
