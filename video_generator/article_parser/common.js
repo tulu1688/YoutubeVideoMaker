@@ -27,9 +27,17 @@ module.exports = {
             return null;
 
         // Replace image with bound <img>
-        $(opts.imgTag + ' img').each(function () {
-            images.push($(this).attr('src'));
-        });
+        if (opts.imgTag) {
+            $(opts.imgTag + ' img').each(function () {
+                images.push($(this).attr('src'));
+            });
+        } else {
+            $('img').each(function () {
+                console.log(this);
+                images.push($(this).attr('src'));
+            });
+        }
+        
         $('img').remove();
 
         $('table').each(function () {
@@ -55,7 +63,6 @@ module.exports = {
         if (opts.titleTag) {
             title = dom2Text($(opts.titleTag));
             $(opts.titleTag).remove();
-            console.log(title);
         }
         if (opts.descriptionTag) {
             description = dom2Text($(opts.descriptionTag).html())

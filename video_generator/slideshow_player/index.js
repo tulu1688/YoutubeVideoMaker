@@ -106,6 +106,7 @@ function setupDiaporama() {
     });
     diaporama.on("ended", function () {
         console.log("Slideshow is ended");
+        isRecording = false;
         stopAndRenderVideo();
     });
 
@@ -155,6 +156,7 @@ startBtn.onclick = function () {
 };
 
 stopBtn.onclick = function () {
+    isRecording = false;
     cvg.notifyFinishCapture(videoInfoId, globalFrameIndex);
     stopAndRenderVideo();
 };

@@ -4,7 +4,8 @@ var request = require('request'),
     async = require('async'),
     download = require('image-downloader');
 
-var vnexpressParser = require('./vnexpress.js');
+var vnexpressParser = require('./vnexpress.js'),
+    gameKParser = require('./gamek.js');
 
 var parseUrl = function (video, imgPath, callback) {
     var url = video.url;
@@ -25,8 +26,8 @@ var parseUrl = function (video, imgPath, callback) {
             }, null);
         } else {
             var parser = null;
-            if (url.indexOf('dantri.com.vn') > -1) {
-                //                parser = dantriParser;
+            if (url.indexOf('gamek.vn') > -1) {
+                parser = gameKParser;
             } else if (url.indexOf('vnexpress.net') > -1) {
                 parser = vnexpressParser;
             }
@@ -38,41 +39,48 @@ var parseUrl = function (video, imgPath, callback) {
                 var downloadedFilePath = [];
 
                 if (result) {
-                    async.each(result.images,
-                        function (url, downloadImgCallback) {
-                            console.log('Dowloading image from [' + url + '] url');
-                            download.image({
-                                    url: url,
-                                    dest: imgPath
-                                })
-                                .then(({
-                                    filename,
-                                    image
-                                }) => {
-                                    downloadedFilePath.push(getFileName(filename));
-                                    downloadImgCallback();
-                                }).catch((err) => {
-                                    downloadImgCallback(err);
-                                });
-                        },
-                        function (err) {
-                            if (err) {
-                                err.ref_id = youtubeVideoInfoId;
-                                callback(err, null);
-                            } else {
-                                callback(null, {
-                                    ref_id: youtubeVideoInfoId,
-                                    url: url,
-                                    content: result.content,
-                                    images: downloadedFilePath,
-                                    title: result.title,
-                                    description: result.description,
-                                    thumbnail: result.images[0]
-                                });
+                    if (result.images && result.images.length > 0) {
+                        async.each(result.images,
+                            function (url, downloadImgCallback) {
+                                console.log('Dowloading image from [' + url + '] url');
+                                download.image({
+                                        url: url,
+                                        dest: imgPath
+                                    })
+                                    .then(({
+                                        filename,
+                                        image
+                                    }) => {
+                                        downloadedFilePath.push(getFileName(filename));
+                                        downloadImgCallback();
+                                    }).catch((err) => {
+                                        downloadImgCallback(err);
+                                    });
+                            },
+                            function (err) {
+                                if (err) {
+                                    err.ref_id = youtubeVideoInfoId;
+                                    callback(err, null);
+                                } else {
+                                    callback(null, {
+                                        ref_id: youtubeVideoInfoId,
+                                        url: url,
+                                        content: result.content,
+                                        images: downloadedFilePath,
+                                        title: result.title,
+                                        description: result.description,
+                                        thumbnail: result.images[0]
+                                    });
 
+                                }
                             }
-                        }
-                    );
+                        );
+                    } else {
+                        callback({
+                            internelError: 'NO_IMAGE_FOUND',
+                            ref_id: youtubeVideoInfoId
+                        }, null);
+                    }
                 } else {
                     callback({
                         internelError: 'PARSE_FAIL',
