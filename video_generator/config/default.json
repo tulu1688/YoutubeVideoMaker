@@ -1,6 +1,6 @@
 {
     "app": {
-        "port": 3172,
+        "port": 80,
         "apiVersion": "v1.0"
     },
     "dbConfig": {

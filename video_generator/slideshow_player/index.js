@@ -2,7 +2,7 @@ var Diaporama = require("diaporama");
 var GlslTransitions = require("glsl-transitions");
 var beautify = require("json-beautify");
 var dateFormat = require('dateformat');
-var socket = require('socket.io-client')('http://localhost:3172');
+var socket = require('socket.io-client')('http://youtube-video-generator:80');
 
 var cvg = require('./cvg.js'),
     text_utils = require('./text_utils.js'),
@@ -72,17 +72,17 @@ socket.on('article', function (data) {
         }
 
         videoInfoId = data.ref_id;
-        
+
         articleContentEditText.value = data.content;
         descriptionEdt.value = data.description;
         titleEdt.value = data.title;
-        
+
         startBtn.removeAttribute("disabled");
     } else if (data.status == 'fail') {
         articleContentEditText.value = '';
         descriptionEdt.value = '';
         titleEdt.value = '';
-        
+
         startBtn.setAttribute("disabled","true");
         stopBtn.setAttribute("disabled","true");
     }
@@ -135,7 +135,7 @@ startBtn.onclick = function () {
         fetchUrlBtn.setAttribute("disabled","true");
         stopBtn.removeAttribute("disabled");
         startBtn.setAttribute("disabled","true");
-        
+
         frameIndex = 0;
         globalFrameIndex = 0;
         isSubtitlePlayed = false;
@@ -167,7 +167,7 @@ function stopAndRenderVideo() {
     fetchUrlBtn.removeAttribute("disabled");
     stopBtn.setAttribute("disabled","true");
     startBtn.setAttribute("disabled","true");
-        
+
     copied_context.clearRect(0, 0, copied_canvas.width, copied_canvas.height);
     resetDiaporama();
 }
